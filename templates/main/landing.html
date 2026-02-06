@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - My Digital Universe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --dark: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: auto;
+        }
+
+        /* Navigation */
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .landing-nav.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Full viewport sections */
+        .viewport-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 6rem 2rem 4rem;
+            scroll-snap-align: start;
+        }
+
+        .scroll-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* Section 1 - Blog */
+        .section-blog {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            color: white;
+        }
+
+        .section-blog::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="120" height="120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="none"/><circle cx="40" cy="40" r="15" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/><circle cx="40" cy="40" r="25" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/><circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><circle cx="90" cy="80" r="12" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/><circle cx="90" cy="80" r="20" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/></svg>');
+            opacity: 0.6;
+        }
+
+        /* Section 2 - Tools */
+        .section-tools {
+            background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+            color: white;
+        }
+
+        .section-tools::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><rect x="15" y="15" width="30" height="30" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2" rx="2"/><rect x="55" y="15" width="30" height="30" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" rx="2"/><rect x="15" y="55" width="30" height="30" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" rx="2"/><rect x="55" y="55" width="30" height="30" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" rx="2"/></svg>');
+            opacity: 0.5;
+        }
+
+        /* Section 3 - Diary */
+        .section-diary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+            color: white;
+        }
+
+        .section-diary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="130" height="130" xmlns="http://www.w3.org/2000/svg"><rect width="130" height="130" fill="none"/><circle cx="35" cy="35" r="3" fill="rgba(255,255,255,0.3)"/><circle cx="65" cy="25" r="2.5" fill="rgba(255,255,255,0.25)"/><circle cx="95" cy="40" r="3" fill="rgba(255,255,255,0.3)"/><circle cx="50" cy="70" r="2" fill="rgba(255,255,255,0.2)"/><circle cx="80" cy="65" r="2.5" fill="rgba(255,255,255,0.25)"/><circle cx="110" cy="80" r="3" fill="rgba(255,255,255,0.3)"/><circle cx="25" cy="95" r="2" fill="rgba(255,255,255,0.2)"/><circle cx="70" cy="100" r="2.5" fill="rgba(255,255,255,0.25)"/><path d="M35 35 L65 25 M65 25 L95 40 M50 70 L80 65 M80 65 L110 80" stroke="rgba(255,255,255,0.12)" stroke-width="1"/></svg>');
+            opacity: 0.6;
+        }
+
+        /* Content styling */
+        .section-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            text-align: center;
+            animation: fadeInUp 1s ease;
+            margin-bottom: 4rem;
+        }
+
+        .section-diary .section-content {
+            margin-top: -10rem;
+        }
+
+        /* Footer */
+        .landing-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            font-size: 0.875rem;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .landing-footer.show {
+            transform: translateY(0);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .copyright {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .footer-links a {
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Adjust scroll container to account for footer */
+        .scroll-container {
+            height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .footer-links {
+                gap: 1rem;
+            }
+            
+            .landing-footer {
+                padding: 0.75rem 0;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .section-description {
+            font-size: 1.25rem;
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+        }
+
+        .visit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            background: white;
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .visit-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            color: var(--dark);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            z-index: 10;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .scroll-indicator i {
+            font-size: 2.5rem;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Progress indicator */
+        .progress-indicator {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: white;
+            transform: scale(1.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .section-description {
+                font-size: 1.2rem;
+            }
+
+            .section-icon {
+                font-size: 3.5rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .progress-indicator {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="nav-brand">
+                    <i class="bi bi-compass"></i>
+                    <span>Digital Universe</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#blog" onclick="scrollToSection(0)">Blog</a></li>
+                    <li><a href="#tools" onclick="scrollToSection(1)">Tools</a></li>
+                    <li><a href="#diary" onclick="scrollToSection(2)">Diary</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator">
+        <div class="progress-dot active" onclick="scrollToSection(0)" data-section="0"></div>
+        <div class="progress-dot" onclick="scrollToSection(1)" data-section="1"></div>
+        <div class="progress-dot" onclick="scrollToSection(2)" data-section="2"></div>
+    </div>
+
+    <!-- Scroll Container -->
+    <div class="scroll-container" id="scrollContainer">
+        <!-- Section 1: Technical Blog -->
+        <section class="viewport-section section-blog" id="blog" data-section="0">
+            <div class="section-content">
+                <div class="section-icon">
+                    <i class="bi bi-terminal"></i>
+                </div>
+                <h1 class="section-title">Technical Blog</h1>
+                <p class="section-description">
+                    Cutting-edge tutorials and development insights from industry experts.
+                </p>
+                <a href="index.html" class="visit-btn">
+                    <span>Visit Blog</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <a class="scroll-indicator" onclick="scrollToSection(1)">
+                <span>Scroll Down</span>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+        </section>
+
+        <!-- Section 2: Tools Website -->
+        <section class="viewport-section section-tools" id="tools" data-section="1">
+            <div class="section-content">
+                <div class="section-icon">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <h1 class="section-title">Developer Tools</h1>
+                <p class="section-description">
+                    Powerful utilities and tools to boost your productivity. 
+                    From code formatters to API testers, everything you need in one place.
+                </p>
+                <a href="#" class="visit-btn">
+                    <span>Explore Tools</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <a class="scroll-indicator" onclick="scrollToSection(2)">
+                <span>Scroll Down</span>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+        </section>
+
+        <!-- Section 3: Personal Diary -->
+        <section class="viewport-section section-diary" id="diary" data-section="2">
+            <div class="section-content">
+                <div class="section-icon">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <h1 class="section-title">Personal Diary</h1>
+                <p class="section-description">
+                    My personal journey, thoughts, and reflections. 
+                    A digital diary capturing moments, ideas, and life experiences.
+                </p>
+                <a href="#" class="visit-btn">
+                    <span>Read Diary</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <a class="scroll-indicator" onclick="scrollToSection(0)">
+                <span>Back to Top</span>
+                <i class="bi bi-chevron-up"></i>
+            </a>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    © 2026 My Digital Universe. All rights reserved.
+                </div>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Random design selector - changes on each page load/refresh
+        const designs = [
+            // Design 1 - Blue, Green, Purple
+            {
+                blog: {
+                    gradient: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="120" height="120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="none"/><circle cx="40" cy="40" r="15" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/><circle cx="40" cy="40" r="25" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/><circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><circle cx="90" cy="80" r="12" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/><circle cx="90" cy="80" r="20" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/></svg>',
+                    opacity: 0.6
+                },
+                tools: {
+                    gradient: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><rect x="15" y="15" width="30" height="30" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2" rx="2"/><rect x="55" y="15" width="30" height="30" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" rx="2"/><rect x="15" y="55" width="30" height="30" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" rx="2"/><rect x="55" y="55" width="30" height="30" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" rx="2"/></svg>',
+                    opacity: 0.5
+                },
+                diary: {
+                    gradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="130" height="130" xmlns="http://www.w3.org/2000/svg"><rect width="130" height="130" fill="none"/><circle cx="35" cy="35" r="3" fill="rgba(255,255,255,0.3)"/><circle cx="65" cy="25" r="2.5" fill="rgba(255,255,255,0.25)"/><circle cx="95" cy="40" r="3" fill="rgba(255,255,255,0.3)"/><circle cx="50" cy="70" r="2" fill="rgba(255,255,255,0.2)"/><circle cx="80" cy="65" r="2.5" fill="rgba(255,255,255,0.25)"/><circle cx="110" cy="80" r="3" fill="rgba(255,255,255,0.3)"/><circle cx="25" cy="95" r="2" fill="rgba(255,255,255,0.2)"/><circle cx="70" cy="100" r="2.5" fill="rgba(255,255,255,0.25)"/><path d="M35 35 L65 25 M65 25 L95 40 M50 70 L80 65 M80 65 L110 80" stroke="rgba(255,255,255,0.12)" stroke-width="1"/></svg>',
+                    opacity: 0.6
+                }
+            },
+            // Design 2 - Teal, Purple, Orange
+            {
+                blog: {
+                    gradient: 'linear-gradient(135deg, #115e59 0%, #14b8a6 50%, #5eead4 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="130" height="130" xmlns="http://www.w3.org/2000/svg"><rect width="130" height="130" fill="none"/><path d="M0,40 Q20,30 40,40 T80,40 T120,40" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2.5"/><path d="M0,60 Q20,50 40,60 T80,60 T120,60" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><path d="M0,80 Q20,70 40,80 T80,80 T120,80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/><circle cx="40" cy="40" r="3" fill="rgba(255,255,255,0.25)"/><circle cx="80" cy="60" r="2.5" fill="rgba(255,255,255,0.2)"/></svg>',
+                    opacity: 0.6
+                },
+                tools: {
+                    gradient: 'linear-gradient(135deg, #5b21b6 0%, #8b5cf6 50%, #a78bfa 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><polygon points="50,20 65,28 65,44 50,52 35,44 35,28" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><polygon points="50,52 65,60 65,76 50,84 35,76 35,60" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/><polygon points="80,36 90,42 90,54 80,60 70,54 70,42" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/><polygon points="20,36 30,42 30,54 20,60 10,54 10,42" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/></svg>',
+                    opacity: 0.5
+                },
+                diary: {
+                    gradient: 'linear-gradient(135deg, #ea580c 0%, #fb923c 50%, #fdba74 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="110" height="110" xmlns="http://www.w3.org/2000/svg"><rect width="110" height="110" fill="none"/><rect x="35" y="25" width="35" height="50" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="2" rx="3"/><polygon points="52.5,75 45,68 60,68" fill="rgba(255,255,255,0.15)"/><line x1="42" y1="35" x2="63" y2="35" stroke="rgba(255,255,255,0.18)" stroke-width="2"/><line x1="42" y1="45" x2="63" y2="45" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/><line x1="42" y1="55" x2="58" y2="55" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/></svg>',
+                    opacity: 0.5
+                }
+            },
+            // Design 3 - Ocean, Cyan, Coral
+            {
+                blog: {
+                    gradient: 'linear-gradient(135deg, #0c4a6e 0%, #0284c7 50%, #38bdf8 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="140" height="140" xmlns="http://www.w3.org/2000/svg"><rect width="140" height="140" fill="none"/><circle cx="30" cy="30" r="2.5" fill="rgba(255,255,255,0.4)"/><circle cx="70" cy="20" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="110" cy="35" r="2.5" fill="rgba(255,255,255,0.35)"/><circle cx="50" cy="70" r="1.5" fill="rgba(255,255,255,0.25)"/><circle cx="90" cy="80" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="120" cy="90" r="2.5" fill="rgba(255,255,255,0.4)"/><path d="M30 30 L70 20 M70 20 L110 35" stroke="rgba(255,255,255,0.15)" stroke-width="1"/></svg>',
+                    opacity: 0.6
+                },
+                tools: {
+                    gradient: 'linear-gradient(135deg, #0e7490 0%, #06b6d4 50%, #22d3ee 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="110" height="110" xmlns="http://www.w3.org/2000/svg"><rect width="110" height="110" fill="none"/><line x1="20" y1="30" x2="50" y2="30" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><line x1="60" y1="30" x2="90" y2="30" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><line x1="50" y1="30" x2="50" y2="50" stroke="rgba(255,255,255,0.15)" stroke-width="2"/><line x1="60" y1="30" x2="60" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="2"/><circle cx="50" cy="30" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="60" cy="30" r="4" fill="rgba(255,255,255,0.3)"/><rect x="45" y="50" width="10" height="10" fill="rgba(255,255,255,0.2)"/></svg>',
+                    opacity: 0.5
+                },
+                diary: {
+                    gradient: 'linear-gradient(135deg, #c2410c 0%, #f97316 50%, #fb923c 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><rect x="30" y="25" width="40" height="50" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" rx="2"/><line x1="35" y1="35" x2="60" y2="35" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/><line x1="35" y1="45" x2="60" y2="45" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/><line x1="35" y1="55" x2="55" y2="55" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/></svg>',
+                    opacity: 0.4
+                }
+            },
+            // Design 4 - Forest, Mint, Lavender
+            {
+                blog: {
+                    gradient: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><line x1="20" y1="20" x2="80" y2="20" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><line x1="20" y1="40" x2="80" y2="40" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><line x1="20" y1="60" x2="80" y2="60" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="rgba(255,255,255,0.18)"/><circle cx="50" cy="40" r="3" fill="rgba(255,255,255,0.18)"/></svg>',
+                    opacity: 0.5
+                },
+                tools: {
+                    gradient: 'linear-gradient(135deg, #047857 0%, #14b8a6 50%, #5eead4 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="120" height="120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="none"/><circle cx="40" cy="40" r="20" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/><circle cx="80" cy="80" r="15" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/><circle cx="40" cy="40" r="10" fill="rgba(255,255,255,0.08)"/></svg>',
+                    opacity: 0.5
+                },
+                diary: {
+                    gradient: 'linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #9333ea 100%)',
+                    pattern: 'data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><path d="M30,30 L50,20 L70,30 L70,50 L50,60 L30,50 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/><circle cx="50" cy="80" r="4" fill="rgba(255,255,255,0.2)"/></svg>',
+                    opacity: 0.5
+                }
+            },
+            // Design 5 - Pure Ocean Breeze (NO PATTERN - Pure Gradient)
+            {
+                blog: {
+                    gradient: 'linear-gradient(135deg, #082f49 0%, #0c4a6e 18%, #075985 36%, #0e7490 54%, #06b6d4 72%, #67e8f9 90%, #cffafe 100%)',
+                    pattern: '',
+                    opacity: 1
+                },
+                tools: {
+                    gradient: 'linear-gradient(135deg, #365314 0%, #4d7c0f 18%, #65a30d 36%, #84cc16 54%, #a3e635 72%, #d9f99d 90%, #ecfccb 100%)',
+                    pattern: '',
+                    opacity: 1
+                },
+                diary: {
+                    gradient: 'linear-gradient(135deg, #450a0a 0%, #7f1d1d 18%, #b91c1c 36%, #dc2626 54%, #ef4444 72%, #fca5a5 90%, #fecaca 100%)',
+                    pattern: '',
+                    opacity: 1
+                }
+            },
+            // Design 6 - Pure Emerald Cascade (NO PATTERN - Pure Gradient)
+            {
+                blog: {
+                    gradient: 'linear-gradient(135deg, #064e3b 0%, #065f46 14%, #047857 28%, #059669 42%, #10b981 56%, #34d399 70%, #6ee7b7 84%, #a7f3d0 100%)',
+                    pattern: '',
+                    opacity: 1
+                },
+                tools: {
+                    gradient: 'linear-gradient(135deg, #422006 0%, #713f12 14%, #92400e 28%, #b45309 42%, #d97706 56%, #f59e0b 70%, #fbbf24 84%, #fde68a 100%)',
+                    pattern: '',
+                    opacity: 1
+                },
+                diary: {
+                    gradient: 'linear-gradient(135deg, #831843 0%, #9f1239 14%, #be185d 28%, #db2777 42%, #ec4899 56%, #f472b6 70%, #f9a8d4 84%, #fbcfe8 100%)',
+                    pattern: '',
+                    opacity: 1
+                }
+            }
+        ];
+
+        // Check if this is a fresh visit or within-session navigation
+        let selectedDesign;
+        if (sessionStorage.getItem('hasVisited')) {
+            // User is navigating within the same session (refresh or back from another page) - show random
+            selectedDesign = designs[Math.floor(Math.random() * designs.length)];
+        } else {
+            // Fresh visit (new user or reopened after closing browser) - show default
+            selectedDesign = designs[0];
+            sessionStorage.setItem('hasVisited', 'true');
+        }
+
+        // Apply the design to sections
+        const blogSection = document.querySelector('.section-blog');
+        const toolsSection = document.querySelector('.section-tools');
+        const diarySection = document.querySelector('.section-diary');
+
+        if (blogSection) {
+            blogSection.style.background = selectedDesign.blog.gradient;
+            const blogBefore = document.createElement('style');
+            blogBefore.innerHTML = `.section-blog::before { background: url('${selectedDesign.blog.pattern}'); opacity: ${selectedDesign.blog.opacity}; }`;
+            document.head.appendChild(blogBefore);
+        }
+
+        if (toolsSection) {
+            toolsSection.style.background = selectedDesign.tools.gradient;
+            const toolsBefore = document.createElement('style');
+            toolsBefore.innerHTML = `.section-tools::before { background: url('${selectedDesign.tools.pattern}'); opacity: ${selectedDesign.tools.opacity}; }`;
+            document.head.appendChild(toolsBefore);
+        }
+
+        if (diarySection) {
+            diarySection.style.background = selectedDesign.diary.gradient;
+            const diaryBefore = document.createElement('style');
+            diaryBefore.innerHTML = `.section-diary::before { background: url('${selectedDesign.diary.pattern}'); opacity: ${selectedDesign.diary.opacity}; }`;
+            document.head.appendChild(diaryBefore);
+        }
+
+        let isScrolling = false;
+        let currentSection = 0;
+        const sections = document.querySelectorAll('.viewport-section');
+        const progressDots = document.querySelectorAll('.progress-dot');
+        const scrollContainer = document.getElementById('scrollContainer');
+        const navbar = document.querySelector('.landing-nav');
+        const footer = document.querySelector('.landing-footer');
+
+        // Smooth scroll to section with slower animation
+        function scrollToSection(index) {
+            if (index < 0 || index >= sections.length || isScrolling) return;
+            
+            isScrolling = true;
+            currentSection = index;
+            
+            const targetSection = sections[index];
+            const targetPosition = targetSection.offsetTop;
+            const startPosition = scrollContainer.scrollTop;
+            const distance = targetPosition - startPosition;
+            const duration = 400; // Faster: 0.8 seconds
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                
+                // Easing function for smooth animation
+                const ease = progress < 0.5
+                    ? 4 * progress * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                
+                scrollContainer.scrollTop = startPosition + distance * ease;
+                
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                } else {
+                    isScrolling = false;
+                }
+            }
+            
+            requestAnimationFrame(animation);
+            updateProgressIndicator();
+        }
+
+        // Update progress indicator
+        function updateProgressIndicator() {
+            progressDots.forEach((dot, index) => {
+                if (index === currentSection) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+            
+            // Show footer only on last section (diary)
+            if (currentSection === sections.length - 1) {
+                footer.classList.add('show');
+            } else {
+                footer.classList.remove('show');
+            }
+        }
+
+        // Handle mouse wheel scroll with strict one-section-at-a-time control
+        let wheelTimeout = null;
+        let wheelDelta = 0;
+        let lastScrollTime = 0;
+        const scrollCooldown = 50; // Short cooldown to prevent double-triggering
+        
+        scrollContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            // Block all scrolling if currently animating
+            if (isScrolling) return;
+            
+            // Check if enough time has passed since last scroll
+            const now = Date.now();
+            if (now - lastScrollTime < scrollCooldown) {
+                return;
+            }
+            
+            // Accumulate wheel delta
+            wheelDelta += e.deltaY;
+            
+            // Clear existing timeout
+            if (wheelTimeout) {
+                clearTimeout(wheelTimeout);
+            }
+            
+            // Set new timeout
+            wheelTimeout = setTimeout(() => {
+                // Only scroll if delta exceeds threshold (lowered for easier scrolling)
+                if (Math.abs(wheelDelta) > 20) {
+                    const direction = wheelDelta > 0 ? 1 : -1;
+                    const targetSection = currentSection + direction;
+                    
+                    // Only allow moving to adjacent section
+                    if (targetSection >= 0 && targetSection < sections.length) {
+                        lastScrollTime = Date.now(); // Record scroll time
+                        scrollToSection(targetSection);
+                    }
+                }
+                
+                // Reset delta
+                wheelDelta = 0;
+                wheelTimeout = null;
+            }, 5); // Wait 50ms after last wheel event for faster response
+        }, { passive: false });
+
+        // Detect section change on scroll (for manual scrolling or other interactions)
+        let lastScrollTop = 0;
+        let scrollDetectionTimeout = null;
+        
+        scrollContainer.addEventListener('scroll', () => {
+            if (isScrolling) return;
+
+            const scrollTop = scrollContainer.scrollTop;
+            const viewportHeight = window.innerHeight;
+            
+            // Debounce scroll detection
+            if (scrollDetectionTimeout) {
+                clearTimeout(scrollDetectionTimeout);
+            }
+            
+            scrollDetectionTimeout = setTimeout(() => {
+                // Determine which section is in view
+                sections.forEach((section, index) => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top >= -viewportHeight / 2 && rect.top < viewportHeight / 2) {
+                        if (currentSection !== index) {
+                            currentSection = index;
+                            updateProgressIndicator();
+                        }
+                    }
+                });
+            }, 100);
+
+            // Hide/show navbar on scroll
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+            lastScrollTop = scrollTop;
+        });
+
+        // Initialize
+        updateProgressIndicator();
+
+        // Prevent default scroll behavior for smoother experience
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                if (currentSection < sections.length - 1) {
+                    scrollToSection(currentSection + 1);
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (currentSection > 0) {
+                    scrollToSection(currentSection - 1);
+                }
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                scrollToSection(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                scrollToSection(sections.length - 1);
+            }
+        });
+    </script>
+</body>
+</html>
