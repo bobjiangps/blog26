@@ -47,10 +47,10 @@ INSTALLED_APPS = [
     'accounting',
     'ckeditor',
     'ckeditor_uploader',
-    'haystack'
+    # 'haystack',
     'corsheaders',
     'rest_framework',
-    'rest_framework_swagger',
+    # 'rest_framework_swagger',
     'rest_framework.authtoken',
 ]
 
@@ -140,9 +140,21 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# STATIC_ROOT = Path.cwd().joinpath("static").as_posix()
 STATICFILES_DIRS = [
     Path.cwd().joinpath("static").as_posix()
 ]
 MEDIA_ROOT = Path.cwd().joinpath("media").as_posix()
 MEDIA_URL = '/media/'
 CKEDITOR_UPLOAD_PATH = 'upload/'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'extraPlugins': 'codesnippet',
+    },
+}
+
+SILENCED_SYSTEM_CHECKS = [
+    "ckeditor.W001", # CKEditor 4.22.1 warning
+]

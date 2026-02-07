@@ -6,4 +6,7 @@
 - uv pip freeze > requirements.txt
 - django-admin startproject pb
 - python manage.py startapp blog
-- GRANT SELECT, INSERT, UPDATE, REFERENCES, DELETE, CREATE, DROP, ALTER, INDEX, TRIGGER, CREATE VIEW, SHOW VIEW, EXECUTE, ALTER ROUTINE, CREATE ROUTINE, CREATE TEMPORARY TABLES, LOCK TABLES, EVENT ON `db_name`.* TO 'user'@'localhost';
+- GRANT SELECT, INSERT, UPDATE, REFERENCES, DELETE, CREATE, DROP, ALTER, INDEX, TRIGGER, CREATE VIEW, SHOW VIEW, EXECUTE, ALTER ROUTINE, CREATE ROUTINE, CREATE TEMPORARY TABLES, LOCK TABLES, EVENT ON `dj_bobjiang_v3`.* TO 'blogeditor'@'localhost';
+- python manage.py makemigrations
+- python manage.py collectstatic
+- python manage.py migrate
