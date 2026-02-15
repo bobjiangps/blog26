@@ -148,6 +148,9 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = Path.cwd().joinpath("media").as_posix()
 MEDIA_URL = '/media/'
 CKEDITOR_UPLOAD_PATH = 'upload/'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_BROWSE_SHOW_DIRS = True
+CKEDITOR_RESTRICT_BY_USER = True
 
 CKEDITOR_CONFIGS = {
     'default': {
