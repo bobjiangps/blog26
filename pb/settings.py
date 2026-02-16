@@ -27,8 +27,8 @@ with open(Path.cwd().joinpath("store.json").as_posix(), "r") as store_file:
 SECRET_KEY = STORED["secret_key"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = False
+# DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 

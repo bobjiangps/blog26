@@ -28,12 +28,12 @@ class Visible(models.Model):
 class Post(models.Model):
     author = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    category = models.ManyToManyField(Category)
     tag = models.ManyToManyField(Tag)
-    summary = models.CharField(max_length=1000)
-    img_url = models.URLField(max_length=200)
+    summary = models.CharField(max_length=1000, blank=True, null=True)
+    img_url = models.URLField(max_length=200, blank=True, null=True)
     content = RichTextUploadingField()
-    visible = models.ForeignKey(Visible, on_delete=models.DO_NOTHING())
+    visible = models.ForeignKey(Visible, on_delete=models.DO_NOTHING)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(blank=True, null=True)
     published_date = models.DateTimeField(blank=True, null=True)
@@ -48,8 +48,7 @@ class Post(models.Model):
         self.save()
 
     def __str__(self):
-        info = f"'{self.title}' published on '{self.published_date}'" if self.published_date else f"'{self.title}' not publish"
-        return info
+        return self.title
 
     def increase_views(self):
         self.views += 1
