@@ -1,0 +1,498 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+        <div class="hero-pattern"></div>
+        <div class="container">
+            <div class="row align-items-center py-5">
+                <div class="col-lg-7">
+                    <div class="hero-content">
+                        <span class="hero-badge">Welcome to TechBlog</span>
+                        <h1 class="hero-title">
+                            Learn, Build, and <span class="text-highlight">Innovate</span>
+                        </h1>
+                        <p class="hero-description">
+                            Explore cutting-edge tutorials, technical insights, and development best practices from industry experts and passionate developers.
+                        </p>
+
+                        <!-- Search Bar -->
+                        <div class="search-container mb-4">
+                            <form class="search-form d-flex" onsubmit="return handleSearch(this)">
+                                <input type="search" class="form-control form-control-lg me-2" placeholder="Search articles, topics, or tags..." aria-label="Search">
+                                <button class="btn btn-primary btn-lg" type="submit">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="hero-buttons">
+                            <a href="blog-list.html" class="btn btn-primary btn-lg">
+                                <i class="bi bi-journal-code"></i> Explore Posts
+                            </a>
+                            <a href="blog-edit.html" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-plus-circle"></i> Write Article
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="hero-illustration">
+                        <div class="illustration-card card-1">
+                            <i class="bi bi-code-square"></i>
+                        </div>
+                        <div class="illustration-card card-2">
+                            <i class="bi bi-terminal"></i>
+                        </div>
+                        <div class="illustration-card card-3">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-journal-text stat-icon"></i>
+                        <h3 class="stat-number">248</h3>
+                        <p class="stat-label">Articles</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-people stat-icon"></i>
+                        <h3 class="stat-number">15.2K</h3>
+                        <p class="stat-label">Readers</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-tags stat-icon"></i>
+                        <h3 class="stat-number">32</h3>
+                        <p class="stat-label">Categories</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-fire stat-icon"></i>
+                        <h3 class="stat-number">94K</h3>
+                        <p class="stat-label">Total Views</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Most Viewed Posts -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-fire"></i> Most Viewed
+                </h2>
+                <a href="blog-list.html?sort=views-desc" class="link-view-all">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Post 1 -->
+                <div class="col-lg-6">
+                    <article class="blog-card blog-card-featured">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                                <i class="bi bi-code-slash"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Web Development
+                                </span>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> 12.5K
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">Building Scalable Microservices with Node.js and Docker</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Learn how to design, develop, and deploy production-ready microservices architecture using Node.js, Docker containers, and Kubernetes orchestration.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">Node.js</span>
+                                <span class="tag">Docker</span>
+                                <span class="tag">Microservices</span>
+                            </div>
+                            <div class="blog-footer">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="author-name">Alex Chen</div>
+                                        <div class="post-date">Feb 1, 2026</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 2 -->
+                <div class="col-lg-6">
+                    <article class="blog-card blog-card-featured">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="bi bi-terminal"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Security
+                                </span>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> 9.8K
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">Complete Guide to API Security: Authentication & Authorization</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Master API security fundamentals including JWT tokens, OAuth 2.0, API keys, rate limiting, and best practices for protecting your web services.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">Security</span>
+                                <span class="tag">API</span>
+                                <span class="tag">OAuth</span>
+                            </div>
+                            <div class="blog-footer">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="author-name">Sarah Johnson</div>
+                                        <div class="post-date">Jan 30, 2026</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <i class="bi bi-cpu"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Performance
+                                </span>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> 8.2K
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">React Performance Optimization Techniques</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Discover advanced strategies to optimize React applications for better performance and user experience.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">React</span>
+                                <span class="tag">Performance</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 4 -->
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                <i class="bi bi-hdd-network"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Database
+                                </span>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> 7.5K
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">PostgreSQL vs MongoDB: Choosing the Right Database</a>
+                            </h3>
+                            <p class="blog-summary">
+                                A comprehensive comparison of relational and NoSQL databases to help you make the right choice.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">PostgreSQL</span>
+                                <span class="tag">MongoDB</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 5 -->
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                                <i class="bi bi-stack"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Cloud
+                                </span>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> 6.9K
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">AWS Lambda: Serverless Architecture Best Practices</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Learn how to build cost-effective and scalable applications using AWS Lambda functions.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">AWS</span>
+                                <span class="tag">Serverless</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newest Published -->
+    <section class="featured-section bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-clock-history"></i> Newest Published
+                </h2>
+                <a href="blog-list.html?sort=date-desc" class="link-view-all">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Post 1 -->
+                <div class="col-lg-6">
+                    <article class="blog-card blog-card-featured">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                                <i class="bi bi-code-slash"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Web Development
+                                </span>
+                                <span class="blog-date">
+                                    <i class="bi bi-calendar"></i> Feb 1, 2026
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">Building Scalable Microservices with Node.js and Docker</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Learn how to design, develop, and deploy production-ready microservices architecture using Node.js, Docker containers, and Kubernetes orchestration.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">Node.js</span>
+                                <span class="tag">Docker</span>
+                                <span class="tag">Microservices</span>
+                            </div>
+                            <div class="blog-footer">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="author-name">Alex Chen</div>
+                                        <div class="post-date">Feb 1, 2026</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 2 -->
+                <div class="col-lg-6">
+                    <article class="blog-card blog-card-featured">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="bi bi-terminal"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Security
+                                </span>
+                                <span class="blog-date">
+                                    <i class="bi bi-calendar"></i> Jan 30, 2026
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">Complete Guide to API Security: Authentication & Authorization</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Master API security fundamentals including JWT tokens, OAuth 2.0, API keys, rate limiting, and best practices for protecting your web services.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">Security</span>
+                                <span class="tag">API</span>
+                                <span class="tag">OAuth</span>
+                            </div>
+                            <div class="blog-footer">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="author-name">Sarah Johnson</div>
+                                        <div class="post-date">Jan 30, 2026</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <i class="bi bi-cpu"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Performance
+                                </span>
+                                <span class="blog-date">
+                                    <i class="bi bi-calendar"></i> Jan 28, 2026
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">React Performance Optimization Techniques</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Discover advanced strategies to optimize React applications for better performance and user experience.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">React</span>
+                                <span class="tag">Performance</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 4 -->
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                <i class="bi bi-hdd-network"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Database
+                                </span>
+                                <span class="blog-date">
+                                    <i class="bi bi-calendar"></i> Jan 25, 2026
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">PostgreSQL vs MongoDB: Choosing the Right Database</a>
+                            </h3>
+                            <p class="blog-summary">
+                                A comprehensive comparison of relational and NoSQL databases to help you make the right choice.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">PostgreSQL</span>
+                                <span class="tag">MongoDB</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Post 5 -->
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                                <i class="bi bi-stack"></i>
+                            </div>
+                        </div>
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <span class="blog-category">
+                                    <i class="bi bi-folder"></i> Cloud
+                                </span>
+                                <span class="blog-date">
+                                    <i class="bi bi-calendar"></i> Jan 22, 2026
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="blog-detail.html">AWS Lambda: Serverless Architecture Best Practices</a>
+                            </h3>
+                            <p class="blog-summary">
+                                Learn how to build cost-effective and scalable applications using AWS Lambda functions.
+                            </p>
+                            <div class="blog-tags">
+                                <span class="tag">AWS</span>
+                                <span class="tag">Serverless</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h2 class="cta-title">Ready to Share Your Knowledge?</h2>
+                        <p class="cta-description">Join our community of developers and start writing technical articles today.</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a href="blog-edit.html" class="btn btn-light btn-lg">
+                            <i class="bi bi-pencil-square"></i> Start Writing
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
