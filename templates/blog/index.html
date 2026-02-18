@@ -8,30 +8,30 @@
             <div class="row align-items-center py-5">
                 <div class="col-lg-7">
                     <div class="hero-content">
-                        <span class="hero-badge">Welcome to TechBlog</span>
+                        <span class="hero-badge">在IT圈的工作笔记</span>
                         <h1 class="hero-title">
                             Learn, Build, and <span class="text-highlight">Innovate</span>
                         </h1>
                         <p class="hero-description">
-                            Explore cutting-edge tutorials, technical insights, and development best practices from industry experts and passionate developers.
+                            学习，总结，实施，并自我进步.<br>包含不限于：web开发，自动化，app开发，机器学习，图像识别，工具框架等...
                         </p>
 
                         <!-- Search Bar -->
                         <div class="search-container mb-4">
                             <form class="search-form d-flex" onsubmit="return handleSearch(this)">
-                                <input type="search" class="form-control form-control-lg me-2" placeholder="Search articles, topics, or tags..." aria-label="Search">
+                                <input type="search" class="form-control form-control-lg me-2" placeholder="输入关键词..." aria-label="Search">
                                 <button class="btn btn-primary btn-lg" type="submit">
-                                    <i class="bi bi-search"></i> Search
+                                    <i class="bi bi-search"></i> 搜索
                                 </button>
                             </form>
                         </div>
 
                         <div class="hero-buttons">
                             <a href="blog-list.html" class="btn btn-primary btn-lg">
-                                <i class="bi bi-journal-code"></i> Explore Posts
+                                <i class="bi bi-journal-code"></i> 查看文章
                             </a>
                             <a href="blog-edit.html" class="btn btn-outline-primary btn-lg">
-                                <i class="bi bi-plus-circle"></i> Write Article
+                                <i class="bi bi-plus-circle"></i> 新增文章
                             </a>
                         </div>
                     </div>
@@ -60,29 +60,29 @@
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
                         <i class="bi bi-journal-text stat-icon"></i>
-                        <h3 class="stat-number">248</h3>
-                        <p class="stat-label">Articles</p>
+                        <h3 class="stat-number">{{info.article_amount}}</h3>
+                        <p class="stat-label">文章</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
                         <i class="bi bi-people stat-icon"></i>
-                        <h3 class="stat-number">15.2K</h3>
-                        <p class="stat-label">Readers</p>
+                        <h3 class="stat-number">700K</h3>
+                        <p class="stat-label">阅读</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
                         <i class="bi bi-tags stat-icon"></i>
-                        <h3 class="stat-number">32</h3>
-                        <p class="stat-label">Categories</p>
+                        <h3 class="stat-number">{{info.category_amount}}</h3>
+                        <p class="stat-label">分类</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
-                        <i class="bi bi-fire stat-icon"></i>
-                        <h3 class="stat-number">94K</h3>
-                        <p class="stat-label">Total Views</p>
+                        <i class="bi bi-display stat-icon"></i>
+                        <h3 class="stat-number">8</h3>
+                        <p class="stat-label">运行(年)</p>
                     </div>
                 </div>
             </div>
@@ -94,192 +94,210 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">
-                    <i class="bi bi-fire"></i> Most Viewed
+                    <i class="bi bi-fire"></i> 近期阅读最多
                 </h2>
                 <a href="blog-list.html?sort=views-desc" class="link-view-all">
-                    View All <i class="bi bi-arrow-right"></i>
+                    查看所有 <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
 
             <div class="row g-4">
-                <!-- Post 1 -->
+                {% for post in top_posts|slice:":2" %}
                 <div class="col-lg-6">
                     <article class="blog-card blog-card-featured">
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> {{post.views}}
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                            </h3>
+                            {% if post.summary %}
+                            <p class="blog-summary">
+                                {{post.summary}}
+                            </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:150}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
+                            <div class="blog-tags">
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="blog-footer">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="author-name">{{post.author.username}}</div>
+                                        <div class="post-date">{{post.published_date}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+
+                <!-- Post 3 -->
+                {% for post in top_posts|slice:"2:3" %}
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
                         <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                                 <i class="bi bi-code-slash"></i>
                             </div>
                         </div>
                         <div class="blog-body">
                             <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Web Development
-                                </span>
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
                                 <span class="blog-views">
-                                    <i class="bi bi-eye"></i> 12.5K
+                                    <i class="bi bi-eye"></i> {{post.views}}
                                 </span>
                             </div>
                             <h3 class="blog-title">
-                                <a href="blog-detail.html">Building Scalable Microservices with Node.js and Docker</a>
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
                             </h3>
+                            {% if post.summary %}
                             <p class="blog-summary">
-                                Learn how to design, develop, and deploy production-ready microservices architecture using Node.js, Docker containers, and Kubernetes orchestration.
+                                {{post.summary}}
                             </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:100}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
                             <div class="blog-tags">
-                                <span class="tag">Node.js</span>
-                                <span class="tag">Docker</span>
-                                <span class="tag">Microservices</span>
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
                             </div>
-                            <div class="blog-footer">
-                                <div class="author-info">
-                                    <div class="author-avatar">
-                                        <i class="bi bi-person-circle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="author-name">Alex Chen</div>
-                                        <div class="post-date">Feb 1, 2026</div>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endif %}
                         </div>
                     </article>
                 </div>
+                {% endfor %}
 
-                <!-- Post 2 -->
-                <div class="col-lg-6">
-                    <article class="blog-card blog-card-featured">
+                <!-- Post 4 -->
+                {% for post in top_posts|slice:"3:4" %}
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
                         <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
                                 <i class="bi bi-terminal"></i>
                             </div>
                         </div>
                         <div class="blog-body">
                             <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Security
-                                </span>
-                                <span class="blog-views">
-                                    <i class="bi bi-eye"></i> 9.8K
-                                </span>
-                            </div>
-                            <h3 class="blog-title">
-                                <a href="blog-detail.html">Complete Guide to API Security: Authentication & Authorization</a>
-                            </h3>
-                            <p class="blog-summary">
-                                Master API security fundamentals including JWT tokens, OAuth 2.0, API keys, rate limiting, and best practices for protecting your web services.
-                            </p>
-                            <div class="blog-tags">
-                                <span class="tag">Security</span>
-                                <span class="tag">API</span>
-                                <span class="tag">OAuth</span>
-                            </div>
-                            <div class="blog-footer">
-                                <div class="author-info">
-                                    <div class="author-avatar">
-                                        <i class="bi bi-person-circle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="author-name">Sarah Johnson</div>
-                                        <div class="post-date">Jan 30, 2026</div>
-                                    </div>
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
                                 </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-
-                <!-- Post 3 -->
-                <div class="col-md-6 col-lg-4">
-                    <article class="blog-card">
-                        <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                                <i class="bi bi-cpu"></i>
-                            </div>
-                        </div>
-                        <div class="blog-body">
-                            <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Performance
-                                </span>
                                 <span class="blog-views">
-                                    <i class="bi bi-eye"></i> 8.2K
+                                    <i class="bi bi-eye"></i> {{post.views}}
                                 </span>
                             </div>
                             <h3 class="blog-title">
-                                <a href="blog-detail.html">React Performance Optimization Techniques</a>
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
                             </h3>
+                            {% if post.summary %}
                             <p class="blog-summary">
-                                Discover advanced strategies to optimize React applications for better performance and user experience.
+                                {{post.summary}}
                             </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:100}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
                             <div class="blog-tags">
-                                <span class="tag">React</span>
-                                <span class="tag">Performance</span>
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
                     </article>
                 </div>
+                {% endfor %}
 
-                <!-- Post 4 -->
+                <!-- Post 5 -->
+                {% for post in top_posts|slice:"4:5" %}
                 <div class="col-md-6 col-lg-4">
                     <article class="blog-card">
                         <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
                                 <i class="bi bi-hdd-network"></i>
                             </div>
                         </div>
                         <div class="blog-body">
                             <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Database
-                                </span>
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
                                 <span class="blog-views">
-                                    <i class="bi bi-eye"></i> 7.5K
+                                    <i class="bi bi-eye"></i> {{post.views}}
                                 </span>
                             </div>
                             <h3 class="blog-title">
-                                <a href="blog-detail.html">PostgreSQL vs MongoDB: Choosing the Right Database</a>
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
                             </h3>
+                            {% if post.summary %}
                             <p class="blog-summary">
-                                A comprehensive comparison of relational and NoSQL databases to help you make the right choice.
+                                {{post.summary}}
                             </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:100}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
                             <div class="blog-tags">
-                                <span class="tag">PostgreSQL</span>
-                                <span class="tag">MongoDB</span>
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
                     </article>
                 </div>
-
-                <!-- Post 5 -->
-                <div class="col-md-6 col-lg-4">
-                    <article class="blog-card">
-                        <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
-                                <i class="bi bi-stack"></i>
-                            </div>
-                        </div>
-                        <div class="blog-body">
-                            <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Cloud
-                                </span>
-                                <span class="blog-views">
-                                    <i class="bi bi-eye"></i> 6.9K
-                                </span>
-                            </div>
-                            <h3 class="blog-title">
-                                <a href="blog-detail.html">AWS Lambda: Serverless Architecture Best Practices</a>
-                            </h3>
-                            <p class="blog-summary">
-                                Learn how to build cost-effective and scalable applications using AWS Lambda functions.
-                            </p>
-                            <div class="blog-tags">
-                                <span class="tag">AWS</span>
-                                <span class="tag">Serverless</span>
-                            </div>
-                        </div>
-                    </article>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -289,210 +307,286 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">
-                    <i class="bi bi-clock-history"></i> Newest Published
+                    <i class="bi bi-clock-history"></i> 发布日期最近
                 </h2>
                 <a href="blog-list.html?sort=date-desc" class="link-view-all">
-                    View All <i class="bi bi-arrow-right"></i>
+                    查看所有 <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
 
             <div class="row g-4">
-                <!-- Post 1 -->
+                {% for post in new_posts|slice:":2" %}
                 <div class="col-lg-6">
                     <article class="blog-card blog-card-featured">
+                        <div class="blog-body">
+                            <div class="blog-meta">
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> {{post.views}}
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                            </h3>
+                            {% if post.summary %}
+                            <p class="blog-summary">
+                                {{post.summary}}
+                            </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:150}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
+                            <div class="blog-tags">
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="blog-footer">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="author-name">{{post.author.username}}</div>
+                                        <div class="post-date">{{post.published_date}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+
+                <!-- Post 3 -->
+                {% for post in new_posts|slice:"2:3" %}
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
                         <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                                 <i class="bi bi-code-slash"></i>
                             </div>
                         </div>
                         <div class="blog-body">
                             <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Web Development
-                                </span>
-                                <span class="blog-date">
-                                    <i class="bi bi-calendar"></i> Feb 1, 2026
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> {{post.views}}
                                 </span>
                             </div>
                             <h3 class="blog-title">
-                                <a href="blog-detail.html">Building Scalable Microservices with Node.js and Docker</a>
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
                             </h3>
+                            {% if post.summary %}
                             <p class="blog-summary">
-                                Learn how to design, develop, and deploy production-ready microservices architecture using Node.js, Docker containers, and Kubernetes orchestration.
+                                {{post.summary}}
                             </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:100}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
                             <div class="blog-tags">
-                                <span class="tag">Node.js</span>
-                                <span class="tag">Docker</span>
-                                <span class="tag">Microservices</span>
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
                             </div>
-                            <div class="blog-footer">
-                                <div class="author-info">
-                                    <div class="author-avatar">
-                                        <i class="bi bi-person-circle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="author-name">Alex Chen</div>
-                                        <div class="post-date">Feb 1, 2026</div>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endif %}
                         </div>
                     </article>
                 </div>
+                {% endfor %}
 
-                <!-- Post 2 -->
-                <div class="col-lg-6">
-                    <article class="blog-card blog-card-featured">
+                <!-- Post 4 -->
+                {% for post in new_posts|slice:"3:4" %}
+                <div class="col-md-6 col-lg-4">
+                    <article class="blog-card">
                         <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
                                 <i class="bi bi-terminal"></i>
                             </div>
                         </div>
                         <div class="blog-body">
                             <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Security
-                                </span>
-                                <span class="blog-date">
-                                    <i class="bi bi-calendar"></i> Jan 30, 2026
-                                </span>
-                            </div>
-                            <h3 class="blog-title">
-                                <a href="blog-detail.html">Complete Guide to API Security: Authentication & Authorization</a>
-                            </h3>
-                            <p class="blog-summary">
-                                Master API security fundamentals including JWT tokens, OAuth 2.0, API keys, rate limiting, and best practices for protecting your web services.
-                            </p>
-                            <div class="blog-tags">
-                                <span class="tag">Security</span>
-                                <span class="tag">API</span>
-                                <span class="tag">OAuth</span>
-                            </div>
-                            <div class="blog-footer">
-                                <div class="author-info">
-                                    <div class="author-avatar">
-                                        <i class="bi bi-person-circle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="author-name">Sarah Johnson</div>
-                                        <div class="post-date">Jan 30, 2026</div>
-                                    </div>
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
                                 </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-
-                <!-- Post 3 -->
-                <div class="col-md-6 col-lg-4">
-                    <article class="blog-card">
-                        <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                                <i class="bi bi-cpu"></i>
-                            </div>
-                        </div>
-                        <div class="blog-body">
-                            <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Performance
-                                </span>
-                                <span class="blog-date">
-                                    <i class="bi bi-calendar"></i> Jan 28, 2026
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> {{post.views}}
                                 </span>
                             </div>
                             <h3 class="blog-title">
-                                <a href="blog-detail.html">React Performance Optimization Techniques</a>
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
                             </h3>
+                            {% if post.summary %}
                             <p class="blog-summary">
-                                Discover advanced strategies to optimize React applications for better performance and user experience.
+                                {{post.summary}}
                             </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:100}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
                             <div class="blog-tags">
-                                <span class="tag">React</span>
-                                <span class="tag">Performance</span>
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
                     </article>
                 </div>
+                {% endfor %}
 
-                <!-- Post 4 -->
+                <!-- Post 5 -->
+                {% for post in new_posts|slice:"4:5" %}
                 <div class="col-md-6 col-lg-4">
                     <article class="blog-card">
                         <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                            <div class="image-placeholder" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
                                 <i class="bi bi-hdd-network"></i>
                             </div>
                         </div>
                         <div class="blog-body">
                             <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Database
-                                </span>
-                                <span class="blog-date">
-                                    <i class="bi bi-calendar"></i> Jan 25, 2026
-                                </span>
-                            </div>
-                            <h3 class="blog-title">
-                                <a href="blog-detail.html">PostgreSQL vs MongoDB: Choosing the Right Database</a>
-                            </h3>
-                            <p class="blog-summary">
-                                A comprehensive comparison of relational and NoSQL databases to help you make the right choice.
-                            </p>
-                            <div class="blog-tags">
-                                <span class="tag">PostgreSQL</span>
-                                <span class="tag">MongoDB</span>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-
-                <!-- Post 5 -->
-                <div class="col-md-6 col-lg-4">
-                    <article class="blog-card">
-                        <div class="blog-image">
-                            <div class="image-placeholder" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
-                                <i class="bi bi-stack"></i>
-                            </div>
-                        </div>
-                        <div class="blog-body">
-                            <div class="blog-meta">
-                                <span class="blog-category">
-                                    <i class="bi bi-folder"></i> Cloud
-                                </span>
-                                <span class="blog-date">
-                                    <i class="bi bi-calendar"></i> Jan 22, 2026
+                                <div class="blog-category-all">
+                                {% if post.category %}
+                                    {% for c in post.category.all %}
+                                    <span class="blog-category">
+                                        <i class="bi bi-folder"></i> {{c.name}}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
+                                <span class="blog-views">
+                                    <i class="bi bi-eye"></i> {{post.views}}
                                 </span>
                             </div>
                             <h3 class="blog-title">
-                                <a href="blog-detail.html">AWS Lambda: Serverless Architecture Best Practices</a>
+                                <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
                             </h3>
+                            {% if post.summary %}
                             <p class="blog-summary">
-                                Learn how to build cost-effective and scalable applications using AWS Lambda functions.
+                                {{post.summary}}
                             </p>
+                            {% else %}
+                            <p class="blog-summary">
+                                {{ post.content|safe|truncatechars:100}}...
+                            </p>
+                            {% endif %}
+                            {% if post.tag %}
                             <div class="blog-tags">
-                                <span class="tag">AWS</span>
-                                <span class="tag">Serverless</span>
+                                {% for t in post.tag.all %}
+                                <span class="tag">{{t.name}}</span>
+                                {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
                     </article>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </section>
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-card">
-                <div class="row align-items-center">
-                    <div class="col-lg-8">
-                        <h2 class="cta-title">Ready to Share Your Knowledge?</h2>
-                        <p class="cta-description">Join our community of developers and start writing technical articles today.</p>
-                    </div>
-                    <div class="col-lg-4 text-lg-end">
-                        <a href="blog-edit.html" class="btn btn-light btn-lg">
-                            <i class="bi bi-pencil-square"></i> Start Writing
-                        </a>
-                    </div>
-                </div>
+<!--    <section class="cta-section">-->
+<!--        <div class="container">-->
+<!--            <div class="cta-card">-->
+<!--                <div class="row align-items-center">-->
+<!--                    <div class="col-lg-8">-->
+<!--                        <h2 class="cta-title">Ready to Share Your Knowledge?</h2>-->
+<!--                        <p class="cta-description">Join our community of developers and start writing technical articles today.</p>-->
+<!--                    </div>-->
+<!--                    <div class="col-lg-4 text-lg-end">-->
+<!--                        <a href="blog-edit.html" class="btn btn-light btn-lg">-->
+<!--                            <i class="bi bi-pencil-square"></i> Start Writing-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </section>-->
+
+    <section id="ad">
+        {% if device_type != 'mobile' %}
+        <div class="row">
+            <div class="col-lg-4 md-4">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- zhanshi-20191030 -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-9496515710476197"
+                     data-ad-slot="6798025641"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            <div class="col-lg-4 md-4">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- zhanshi-20191030 -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-9496515710476197"
+                     data-ad-slot="6798025641"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            <div class="col-lg-4 md-4">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- zhanshi-20191030 -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-9496515710476197"
+                     data-ad-slot="6798025641"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
             </div>
         </div>
+        {% else %}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- zhanshi-20191030 -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-9496515710476197"
+             data-ad-slot="6798025641"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        {% endif %}
     </section>
 {% endblock %}

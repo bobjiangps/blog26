@@ -1,0 +1,88 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <section class="error-section">
+        <div class="error-pattern"></div>
+        <div class="floating-shapes">
+            <div class="shape shape-1"><i class="bi bi-code-slash"></i></div>
+            <div class="shape shape-2"><i class="bi bi-terminal"></i></div>
+            <div class="shape shape-3"><i class="bi bi-bug"></i></div>
+            <div class="shape shape-4"><i class="bi bi-exclamation-triangle"></i></div>
+        </div>
+
+        <div class="container error-container">
+            <div class="error-card">
+                <!-- Error Content Container -->
+                <div id="errorContent">
+                    {% if error_type == '404' %}
+                    <!-- 404 Not Found Error -->
+                    <div class="error-content" data-error="404">
+                        <div class="error-icon-container">
+                            <div class="error-icon error-404">
+                                <i class="bi bi-search"></i>
+                            </div>
+                        </div>
+                        <div class="error-code">404</div>
+                        <h1 class="error-title">Page Not Found</h1>
+                        <p class="error-description">
+                            找不到页面，请检查访问地址是否有误
+                        </p>
+                    </div>
+                    {% elif error_type == '403' %}
+                    <!-- 403 Forbidden Error -->
+                    <div class="error-content" data-error="403">
+                        <div class="error-icon-container">
+                            <div class="error-icon error-403">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                        </div>
+                        <div class="error-code">403</div>
+                        <h1 class="error-title">Access Forbidden</h1>
+                        <p class="error-description">
+                            你无法访问该页面，请检查是否登录或者授权
+                        </p>
+                    </div>
+                    {% elif error_type == '500' %}
+                    <!-- 500 Server Error -->
+                    <div class="error-content" data-error="500">
+                        <div class="error-icon-container">
+                            <div class="error-icon error-500">
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="error-code">500</div>
+                        <h1 class="error-title">Internal Server Error</h1>
+                        <p class="error-description">
+                            服务似乎出现了问题，请等待修复
+                        </p>
+                    </div>
+                    {% else %}
+                    <!-- 500 Server Error -->
+                    <div class="error-content" data-error="500">
+                        <div class="error-icon-container">
+                            <div class="error-icon error-500">
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="error-code">500</div>
+                        <h1 class="error-title">Internal Server Error</h1>
+                        <p class="error-description">
+                            未知错误，请过一会刷新
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Error Actions -->
+                <div class="error-actions">
+                    <a href="{% url 'index' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house-door"></i> 回到主页
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-person-circle"></i> 登录
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

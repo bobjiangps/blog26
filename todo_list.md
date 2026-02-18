@@ -1,0 +1,12 @@
+## todo list
+- search article
+- comment and reply comment, diplay and db data
+- accounting migration
+- sign in and sign out
+- deploy
+- every page and publish article
+- error page
+- baidu stat and google ad
+- pagination
+- sort in list page
+- test

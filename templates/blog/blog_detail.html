@@ -1,0 +1,610 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <!-- Article Header -->
+    <article class="blog-detail">
+        <header class="article-header">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <!-- Search Bar -->
+                        <div class="search-container mb-4">
+                            <form class="search-form d-flex" onsubmit="return handleSearch(this)">
+                                <input type="search" class="form-control me-2" placeholder="输入关键词..." aria-label="Search">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bi bi-search"></i> 搜索
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            {% for c in post.category.all %}
+                            <span class="blog-category">
+                                <i class="bi bi-folder"></i> {{c.name}}
+                            </span>
+                            {% endfor %}
+                            <a href="blog-edit.html" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i> 编辑文章
+                            </a>
+                        </div>
+                        {% if post.visible.name == 'private' %}
+                        <h1 class="article-title">[private] - {{post.title}}</h1>
+                        {% else %}
+                        <h1 class="article-title">{{ post.title }}</h1>
+                        {% endif %}
+                        <div class="article-meta">
+                            <div class="author-section">
+                                <div class="author-avatar">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="author-details">
+                                    <div class="author-name">{{post.author.username}}</div>
+                                    <div class="publish-info">
+                                        <span><i class="bi bi-calendar"></i> {{post.published_date}}</span>
+                                        <span class="mx-2">•</span>
+                                        <span><i class="bi bi-eye"></i> {{post.views}} 阅读</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Article Content -->
+        <div class="article-content">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="content-body">
+                            <p class="lead">
+                                In this comprehensive guide, we'll explore how to design, develop, and deploy production-ready microservices architecture using Node.js and Docker. Whether you're new to microservices or looking to improve your existing architecture, this article will provide practical insights and best practices.
+                            </p>
+
+                            <h2>What are Microservices?</h2>
+                            <p>
+                                Microservices architecture is an approach to building applications as a collection of small, independently deployable services. Each service runs in its own process and communicates with other services through well-defined APIs.
+                            </p>
+
+                            <h3>Key Benefits:</h3>
+                            <ul>
+                                <li><strong>Scalability:</strong> Scale individual services based on demand</li>
+                                <li><strong>Flexibility:</strong> Use different technologies for different services</li>
+                                <li><strong>Resilience:</strong> Failures are isolated to individual services</li>
+                                <li><strong>Faster Development:</strong> Teams can work independently on different services</li>
+                            </ul>
+
+                            <h2>Setting Up Your Development Environment</h2>
+                            <p>Before we dive into code, let's set up our development environment with the necessary tools:</p>
+
+                            <div class="code-block">
+                                <pre><code class="language-bash"># Install Node.js (if not already installed)
+# Download from nodejs.org or use a version manager like nvm
+
+# Verify installations
+node --version
+npm --version
+
+# Install Docker
+# Download from docker.com
+
+# Verify Docker installation
+docker --version
+docker-compose --version</code></pre>
+                            </div>
+
+                            <h2>Creating Your First Microservice</h2>
+                            <p>Let's create a simple user service using Express.js:</p>
+
+                            <div class="code-block">
+                                <pre><code class="language-javascript">// user-service/index.js
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(express.json());
+
+// In-memory data store (use database in production)
+const users = [
+  { id: 1, name: 'John Doe', email: 'john@example.com' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
+];
+
+// Get all users
+app.get('/api/users', (req, res) => {
+  res.json(users);
+});
+
+// Get user by ID
+app.get('/api/users/:id', (req, res) => {
+  const user = users.find(u => u.id === parseInt(req.params.id));
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json(user);
+});
+
+// Create new user
+app.post('/api/users', (req, res) => {
+  const newUser = {
+    id: users.length + 1,
+    name: req.body.name,
+    email: req.body.email
+  };
+  users.push(newUser);
+  res.status(201).json(newUser);
+});
+
+app.listen(PORT, () => {
+  console.log(`User service running on port ${PORT}`);
+});</code></pre>
+                            </div>
+
+                            <h2>Dockerizing Your Microservice</h2>
+                            <p>Now let's containerize our service using Docker:</p>
+
+                            <div class="code-block">
+                                <pre><code class="language-docker"># user-service/Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+
+EXPOSE 3001
+
+CMD ["node", "index.js"]</code></pre>
+                            </div>
+
+                            <h2>Docker Compose for Multiple Services</h2>
+                            <p>Use Docker Compose to orchestrate multiple microservices:</p>
+
+                            <div class="code-block">
+                                <pre><code class="language-yaml"># docker-compose.yml
+version: '3.8'
+
+services:
+  user-service:
+    build: ./user-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+    networks:
+      - microservices-network
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+    networks:
+      - microservices-network
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-service
+      - product-service
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge</code></pre>
+                            </div>
+
+                            <div class="info-box">
+                                <h4><i class="bi bi-lightbulb"></i> Pro Tip</h4>
+                                <p>Always use environment variables for configuration and never hardcode sensitive information in your Docker images. Use Docker secrets or environment files for production deployments.</p>
+                            </div>
+
+                            <h2>Best Practices</h2>
+                            <ol>
+                                <li><strong>Design for Failure:</strong> Implement circuit breakers and retry logic</li>
+                                <li><strong>Use API Gateway:</strong> Centralize authentication and routing</li>
+                                <li><strong>Implement Health Checks:</strong> Monitor service availability</li>
+                                <li><strong>Centralized Logging:</strong> Use tools like ELK stack or Splunk</li>
+                                <li><strong>Service Discovery:</strong> Use Consul or Kubernetes DNS</li>
+                                <li><strong>Containerize Everything:</strong> Ensure consistency across environments</li>
+                            </ol>
+
+                            <h2>Deployment Strategies</h2>
+                            <p>For production deployments, consider using Kubernetes for orchestration:</p>
+
+                            <div class="code-block">
+                                <pre><code class="language-yaml"># user-service-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: your-registry/user-service:latest
+        ports:
+        - containerPort: 3001
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"</code></pre>
+                            </div>
+
+                            <h2>Conclusion</h2>
+                            <p>
+                                Building microservices with Node.js and Docker provides a powerful foundation for scalable, maintainable applications. By following these best practices and patterns, you can create robust systems that grow with your business needs.
+                            </p>
+                            <p>
+                                Remember that microservices aren't a silver bullet – they come with complexity. Start small, measure impact, and scale gradually as your team and infrastructure mature.
+                            </p>
+                        </div>
+
+                        <!-- Tags Section -->
+                        <div class="article-tags">
+                            <h5><i class="bi bi-tags"></i> 标签:</h5>
+                            <div class="tags-list">
+                                {% for t in post.tag.all %}
+                                <a href="categories.html" class="tag">{{t.name}}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+<!--                        &lt;!&ndash; Share Section &ndash;&gt;-->
+<!--                        <div class="article-share">-->
+<!--                            <h5>Share this article:</h5>-->
+<!--                            <div class="share-buttons">-->
+<!--                                <button class="btn btn-share"><i class="bi bi-twitter"></i></button>-->
+<!--                                <button class="btn btn-share"><i class="bi bi-facebook"></i></button>-->
+<!--                                <button class="btn btn-share"><i class="bi bi-linkedin"></i></button>-->
+<!--                                <button class="btn btn-share"><i class="bi bi-link-45deg"></i></button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <!-- Comments Section -->
+                        <div class="comments-section mt-5">
+                            <h3 class="mb-4">
+                                <i class="bi bi-chat-dots"></i> Comments (<span id="commentCount">3</span>)
+                            </h3>
+
+                            <!-- Add Comment Form -->
+                            <div class="add-comment-card mb-4">
+                                <h5 class="mb-3">Leave a Comment</h5>
+                                <form id="commentForm" onsubmit="return handleAddComment(event)">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="commentName" placeholder="Your Name" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="email" class="form-control" id="commentEmail" placeholder="Your Email" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <textarea class="form-control" id="commentText" rows="4" placeholder="Write your comment here..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-send"></i> Post Comment
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Comments List -->
+                            <div class="comments-list" id="commentsList">
+                                <!-- Comment 1 -->
+                                <div class="comment-card">
+                                    <div class="comment-header">
+                                        <div class="comment-avatar">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                        <div class="comment-info">
+                                            <div class="comment-author">David Martinez</div>
+                                            <div class="comment-date">
+                                                <i class="bi bi-clock"></i> 2 hours ago
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">
+                                        <p>Excellent article! The Docker Compose example really helped me understand how to orchestrate multiple microservices. I'm implementing this approach in my current project.</p>
+                                    </div>
+                                    <div class="comment-actions">
+                                        <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (12)</button>
+                                        <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+                                    </div>
+
+                                    <!-- Reply Form (hidden by default) -->
+                                    <div class="reply-form-container" style="display: none;">
+                                        <form onsubmit="return handleAddReply(event, this.closest('.comment-card'))">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" placeholder="Your name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                                                <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!-- Replies -->
+                                    <div class="replies-list">
+                                        <div class="comment-card reply-card">
+                                            <div class="comment-header">
+                                                <div class="comment-avatar">
+                                                    <i class="bi bi-person-circle"></i>
+                                                </div>
+                                                <div class="comment-info">
+                                                    <div class="comment-author">Alex Chen <span class="author-badge">Author</span></div>
+                                                    <div class="comment-date">
+                                                        <i class="bi bi-clock"></i> 1 hour ago
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="comment-body">
+                                                <p><strong>@David Martinez</strong> Thanks for the positive feedback! Glad it's helping with your project. Feel free to reach out if you have any questions during implementation.</p>
+                                            </div>
+                                            <div class="comment-actions">
+                                                <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (5)</button>
+                                                <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+                                            </div>
+
+                                            <!-- Reply Form (hidden by default) -->
+                                            <div class="reply-form-container" style="display: none;">
+                                                <form onsubmit="return handleAddReply(event, this.closest('.reply-card'))">
+                                                    <div class="mb-3">
+                                                        <input type="text" class="form-control" placeholder="Your name" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                                    </div>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                                                        <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Comment 2 -->
+                                <div class="comment-card">
+                                    <div class="comment-header">
+                                        <div class="comment-avatar">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                        <div class="comment-info">
+                                            <div class="comment-author">Lisa Wang</div>
+                                            <div class="comment-date">
+                                                <i class="bi bi-clock"></i> 5 hours ago
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">
+                                        <p>Great breakdown of microservices architecture! One question though - how do you handle database transactions across multiple services? Would love to see a follow-up article on that topic.</p>
+                                    </div>
+                                    <div class="comment-actions">
+                                        <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (8)</button>
+                                        <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+                                    </div>
+
+                                    <!-- Reply Form (hidden by default) -->
+                                    <div class="reply-form-container" style="display: none;">
+                                        <form onsubmit="return handleAddReply(event, this.closest('.comment-card'))">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" placeholder="Your name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                                                <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!-- Replies -->
+                                    <div class="replies-list">
+                                        <div class="comment-card reply-card">
+                                            <div class="comment-header">
+                                                <div class="comment-avatar">
+                                                    <i class="bi bi-person-circle"></i>
+                                                </div>
+                                                <div class="comment-info">
+                                                    <div class="comment-author">Alex Chen <span class="author-badge">Author</span></div>
+                                                    <div class="comment-date">
+                                                        <i class="bi bi-clock"></i> 4 hours ago
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="comment-body">
+                                                <p><strong>@Lisa Wang</strong> Great question! For distributed transactions, I typically use the Saga pattern or eventual consistency. I'll definitely write a follow-up article on this topic soon!</p>
+                                            </div>
+                                            <div class="comment-actions">
+                                                <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (6)</button>
+                                                <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+                                            </div>
+
+                                            <!-- Reply Form (hidden by default) -->
+                                            <div class="reply-form-container" style="display: none;">
+                                                <form onsubmit="return handleAddReply(event, this.closest('.reply-card'))">
+                                                    <div class="mb-3">
+                                                        <input type="text" class="form-control" placeholder="Your name" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                                    </div>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                                                        <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="comment-card reply-card">
+                                            <div class="comment-header">
+                                                <div class="comment-avatar">
+                                                    <i class="bi bi-person-circle"></i>
+                                                </div>
+                                                <div class="comment-info">
+                                                    <div class="comment-author">Michael Brown</div>
+                                                    <div class="comment-date">
+                                                        <i class="bi bi-clock"></i> 3 hours ago
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="comment-body">
+                                                <p><strong>@Lisa Wang</strong> I've been using event sourcing with CQRS for this. Works really well for maintaining consistency across services.</p>
+                                            </div>
+                                            <div class="comment-actions">
+                                                <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (4)</button>
+                                                <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+                                            </div>
+
+                                            <!-- Reply Form (hidden by default) -->
+                                            <div class="reply-form-container" style="display: none;">
+                                                <form onsubmit="return handleAddReply(event, this.closest('.reply-card'))">
+                                                    <div class="mb-3">
+                                                        <input type="text" class="form-control" placeholder="Your name" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                                    </div>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                                                        <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Comment 3 -->
+                                <div class="comment-card">
+                                    <div class="comment-header">
+                                        <div class="comment-avatar">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                        <div class="comment-info">
+                                            <div class="comment-author">Robert Chen</div>
+                                            <div class="comment-date">
+                                                <i class="bi bi-clock"></i> 1 day ago
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">
+                                        <p>Thanks for sharing! The Kubernetes deployment example is very practical. I've been looking for a clear guide like this. Bookmarked for future reference! 🚀</p>
+                                    </div>
+                                    <div class="comment-actions">
+                                        <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (15)</button>
+                                        <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+                                    </div>
+
+                                    <!-- Reply Form (hidden by default) -->
+                                    <div class="reply-form-container" style="display: none;">
+                                        <form onsubmit="return handleAddReply(event, this.closest('.comment-card'))">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" placeholder="Your name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                                                <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Related Posts -->
+    <section class="related-posts">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <h2 class="section-title">
+                        <i class="bi bi-lightbulb"></i> Related Articles
+                    </h2>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="blog-card">
+                                <div class="blog-image">
+                                    <div class="image-placeholder bg-success">
+                                        <i class="bi bi-shield-check"></i>
+                                    </div>
+                                </div>
+                                <div class="blog-body">
+                                    <span class="blog-category"><i class="bi bi-folder"></i> Security</span>
+                                    <h4 class="blog-title">
+                                        <a href="blog-detail.html">API Security Best Practices</a>
+                                    </h4>
+                                    <p class="blog-summary">Learn how to secure your APIs effectively...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="blog-card">
+                                <div class="blog-image">
+                                    <div class="image-placeholder bg-warning">
+                                        <i class="bi bi-lightning"></i>
+                                    </div>
+                                </div>
+                                <div class="blog-body">
+                                    <span class="blog-category"><i class="bi bi-folder"></i> Performance</span>
+                                    <h4 class="blog-title">
+                                        <a href="blog-detail.html">Node.js Performance Tips</a>
+                                    </h4>
+                                    <p class="blog-summary">Optimize your Node.js applications...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="blog-card">
+                                <div class="blog-image">
+                                    <div class="image-placeholder bg-primary">
+                                        <i class="bi bi-cloud"></i>
+                                    </div>
+                                </div>
+                                <div class="blog-body">
+                                    <span class="blog-category"><i class="bi bi-folder"></i> Cloud</span>
+                                    <h4 class="blog-title">
+                                        <a href="blog-detail.html">Deploying to Kubernetes</a>
+                                    </h4>
+                                    <p class="blog-summary">Complete guide to K8s deployment...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
