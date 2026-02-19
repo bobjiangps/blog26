@@ -566,7 +566,7 @@ function handleAddComment(event) {
             <div class="comment-info">
                 <div class="comment-author">${name}</div>
                 <div class="comment-date">
-                    <i class="bi bi-clock"></i> Just now
+                    <i class="bi bi-clock"></i> 刚才
                 </div>
             </div>
         </div>
@@ -574,22 +574,27 @@ function handleAddComment(event) {
             <p>${text}</p>
         </div>
         <div class="comment-actions">
-            <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (0)</button>
-            <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+            <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> 有用 (0)</button>
+            <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> 回复</button>
         </div>
 
         <!-- Reply Form (hidden by default) -->
         <div class="reply-form-container" style="display: none;">
             <form onsubmit="return handleAddReply(event, this.closest('.comment-card'))">
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Your name" required>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="名称" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="email" class="form-control" placeholder="邮件" required>
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                    <textarea class="form-control" rows="3" placeholder="回复内容..." required></textarea>
                 </div>
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">提交回复</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">取消</button>
                 </div>
             </form>
         </div>
@@ -740,15 +745,20 @@ function handleAddReply(event, commentCard) {
                         </div>
                         <p class="mb-0"><strong>@${replyToName}</strong> ${text}</p>
                         <div class="comment-actions mt-2">
-                            <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> Helpful (0)</button>
-                            <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> Reply</button>
+                            <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> 有用 (0)</button>
+                            <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> 回复</button>
                         </div>
 
                         <!-- Reply Form (hidden by default) -->
                         <div class="reply-form-container" style="display: none;">
                             <form onsubmit="return handleAddReply(event, this.closest('.reply-card'))">
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="名称" required>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" placeholder="名称" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="email" class="form-control" placeholder="邮件" required>
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <textarea class="form-control" rows="3" placeholder="回复内容..." required></textarea>
