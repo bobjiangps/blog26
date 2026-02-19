@@ -73,21 +73,21 @@ function initFormValidation() {
             const password = this.querySelector('input[type="password"]').value;
 
             if (!email || !password) {
-                showNotification('Please fill in all fields', 'warning');
+                showNotification('请填入必要字段', 'warning');
                 return;
             }
 
             if (!isValidEmail(email)) {
-                showNotification('Please enter a valid email address', 'error');
+                showNotification('请输入有效邮箱地址', 'error');
                 return;
             }
 
             // Simulate login
-            showNotification('Signing in...', 'info');
+            showNotification('登录中...', 'info');
             setTimeout(() => {
-                showNotification('Welcome back!', 'success');
+                showNotification('欢迎回来!', 'success');
                 // Redirect to home page
-                window.location.href = 'index.html';
+                // window.location.href = 'index.html';
             }, 1000);
         });
     }
@@ -102,13 +102,13 @@ function initFormValidation() {
             const category = this.querySelector('select[name="category"]').value;
 
             if (!title || !category) {
-                showNotification('Please fill in required fields', 'warning');
+                showNotification('请填入必要字段', 'warning');
                 return;
             }
 
-            showNotification('Saving post...', 'info');
+            showNotification('保存中...', 'info');
             setTimeout(() => {
-                showNotification('Post saved successfully!', 'success');
+                showNotification('文章保存成功!', 'success');
             }, 1000);
         });
     }
@@ -384,20 +384,6 @@ function animateViewCount(element) {
     }, step);
 }
 
-/**
- * Search functionality
- */
-function handleSearch(form) {
-    const query = form.querySelector('input[type="search"]').value;
-    if (query.trim()) {
-        showNotification(`Searching for "${query}"...`, 'info');
-        // Implement actual search logic here
-        setTimeout(() => {
-            window.location.href = `blog-list.html?search=${encodeURIComponent(query)}`;
-        }, 500);
-    }
-    return false;
-}
 
 /**
  * Like/Bookmark functionality
@@ -544,7 +530,6 @@ if (document.querySelector('img[data-src]')) {
 }
 
 // Export functions for inline usage
-window.handleSearch = handleSearch;
 window.toggleLike = toggleLike;
 window.shareArticle = shareArticle;
 window.copyCode = copyCode;
@@ -564,7 +549,7 @@ function handleAddComment(event) {
     const text = document.getElementById('commentText').value;
 
     if (!name || !email || !text) {
-        showNotification('Please fill in all fields', 'warning');
+        showNotification('请输入必要字段', 'warning');
         return false;
     }
 
@@ -630,7 +615,7 @@ function handleAddComment(event) {
     document.getElementById('commentForm').reset();
 
     // Show success message
-    showNotification('Comment posted successfully!', 'success');
+    showNotification('评论发布成功!', 'success');
 
     // Scroll to new comment
     setTimeout(() => {
@@ -695,7 +680,7 @@ function handleAddReply(event, commentCard) {
     const text = textArea.value.trim();
 
     if (!name || !text) {
-        showNotification('Please fill in all fields', 'warning');
+        showNotification('请输入必要字段', 'warning');
         return false;
     }
 
@@ -763,14 +748,14 @@ function handleAddReply(event, commentCard) {
                         <div class="reply-form-container" style="display: none;">
                             <form onsubmit="return handleAddReply(event, this.closest('.reply-card'))">
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Your name" required>
+                                    <input type="text" class="form-control" placeholder="名称" required>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                    <textarea class="form-control" rows="3" placeholder="回复内容..." required></textarea>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">提交回复</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">取消</button>
                                 </div>
                             </form>
                         </div>
@@ -795,7 +780,7 @@ function handleAddReply(event, commentCard) {
     form.closest('.reply-form-container').style.display = 'none';
 
     // Show success message
-    showNotification('Reply posted successfully!', 'success');
+    showNotification('回复信息提交成功!', 'success');
 
     // Scroll to new reply
     setTimeout(() => {

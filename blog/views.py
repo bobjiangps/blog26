@@ -2,7 +2,12 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, StreamingHttpResponse
 from .models import Post, Category, Tag, Comment, ReplyComment
+from pb.settings import BASE_DIR
+from pathlib import Path
+from wsgiref.util import FileWrapper
+import mimetypes
 
 
 def index_articles(request):
@@ -23,9 +28,30 @@ def blog_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if post.visible.name == "private" and request.user.is_authenticated is False:
         return render(request, "blog/error.html", {"error_type": "403"})
-    comments = Comment.objects.filter(post__id=post_id)
+    comments = Comment.objects.filter(post__id=post_id).order_by("-created_time")
     all_comments = { comment: ReplyComment.objects.filter(reply_to__id=comment.id) for comment in comments}
+    comment_amount = 0
+    comment_amount += len(all_comments.keys())
+    for rc in all_comments.values():
+        comment_amount += len(rc)
     post.increase_views()
     post_prev = Post.objects.filter(visible__name="public").filter(id__lt=post_id).order_by('-id').first()
     post_next = Post.objects.filter(visible__name="public").filter(id__gt=post_id).order_by('id').first()
-    return render(request, "blog/blog_detail.html", {"post": post, "comments": all_comments, "post_prev": post_prev, "post_next": post_next})
+    return render(request, "blog/blog_detail.html", {"post": post, "comments": all_comments, "comment_amount": comment_amount, "post_prev": post_prev, "post_next": post_next})
+
+
+def download_bak(request):
+    if request.user.is_authenticated:
+        bak_file = "other/db_bak/django-blog-v3-latest.sql"
+        filename = Path(bak_file).name
+        abs_path = Path(BASE_DIR).joinpath(bak_file)
+        if abs_path.exists():
+            chunk_size = 8192
+            response = StreamingHttpResponse(FileWrapper(open(abs_path.as_posix(), "rb"), chunk_size), content_type=mimetypes.guess_type(abs_path)[0])
+            response['Content-Length'] = abs_path.stat().st_size
+            response['Content-Disposition'] = "attachment; filename=%s" % filename
+            return response
+        else:
+            return HttpResponse('<h1>Cannot find the file</h1>')
+    else:
+        return render(request, "blog/error.html", {"error_type": "403"})
