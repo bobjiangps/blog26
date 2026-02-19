@@ -61,7 +61,7 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
-                        <div class="content-body">
+                        <div class="content-body" id="contentBody" post-id={{post.id}}>
                             {{ post.content|safe }}
                         </div>
 
@@ -121,7 +121,7 @@
                                         <div class="comment-avatar">
                                             <i class="bi bi-person-circle"></i>
                                         </div>
-                                        <div class="comment-info">
+                                        <div class="comment-info" id="commentInfo" comment-id={{c.id}}>
                                             <div class="comment-author">{{c.name}}</div>
                                             <div class="comment-date">
                                                 <i class="bi bi-clock"></i> {{c.created_time}}
@@ -166,7 +166,7 @@
                                                 <div class="comment-avatar">
                                                     <i class="bi bi-person-circle"></i>
                                                 </div>
-                                                <div class="comment-info">
+                                                <div class="comment-info" id="replyInfo" reply-id={{r.id}}>
                                                     <div class="comment-author">{{rc.name}}</div>
                                                     <div class="comment-date">
                                                         <i class="bi bi-clock"></i> {{rc.created_time}}

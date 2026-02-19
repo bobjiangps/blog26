@@ -566,37 +566,12 @@ function handleAddComment(event) {
             <div class="comment-info">
                 <div class="comment-author">${name}</div>
                 <div class="comment-date">
-                    <i class="bi bi-clock"></i> 刚才
+                    <i class="bi bi-clock"></i> 刚刚
                 </div>
             </div>
         </div>
         <div class="comment-body">
             <p>${text}</p>
-        </div>
-        <div class="comment-actions">
-            <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> 有用 (0)</button>
-            <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> 回复</button>
-        </div>
-
-        <!-- Reply Form (hidden by default) -->
-        <div class="reply-form-container" style="display: none;">
-            <form onsubmit="return handleAddReply(event, this.closest('.comment-card'))">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" placeholder="名称" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="email" class="form-control" placeholder="邮件" required>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <textarea class="form-control" rows="3" placeholder="回复内容..." required></textarea>
-                </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm">提交回复</button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">取消</button>
-                </div>
-            </form>
         </div>
     `;
 
@@ -618,6 +593,38 @@ function handleAddComment(event) {
 
     // Clear form
     document.getElementById('commentForm').reset();
+
+    // Post data to api
+    const urlPath = window.location.pathname;
+    const urlPrefix = window.location.href.split(urlPath)[0];
+    //var blogId = null;
+    //for (s of urlPath.split("/")) {
+    //    if (s.search("article-01") != '-1') {
+    //        blogId = s.split("article-01")[1];
+    //        break;
+    //    }
+    //}
+    var blogId = document.getElementById('contentBody').getAttribute('post-id');
+    fetch(urlPrefix + "/bobjiang/api/comments/",
+    {
+        method: "POST",
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          content: text,
+          post: blogId
+        }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          console.log(json);
+        })
+        .catch(err=>{
+            console.log(err);
+        });;
 
     // Show success message
     showNotification('评论发布成功!', 'success');
