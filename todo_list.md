@@ -9,4 +9,5 @@
 - baidu stat and google ad
 - pagination
 - sort in list page
+- reading progress bar not take effect now
 - test
