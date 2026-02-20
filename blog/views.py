@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, StreamingHttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Count, Sum
 from .models import Post, Category, Tag, Comment, ReplyComment
 from pb.settings import BASE_DIR
 from pathlib import Path
@@ -47,7 +48,7 @@ def blog_list(request):
     if login_user not in users:
         posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("published_date").reverse()
     else:
-        posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date').reverse()
+        posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("published_date").reverse()
     return pagination(request, posts)
 
 
@@ -68,26 +69,50 @@ def pagination(request, filter_posts):
 def blog_list_sort(request, sort_type):
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
-    posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('published_date').reverse()
+    posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by('published_date').reverse()
     if login_user not in users:
         if sort_type == "date-desc":
-            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('published_date').reverse()
-        elif sort_type == 'date-asc':
-            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('published_date')
-        elif sort_type == 'views-desc':
-            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('views').reverse()
-        elif sort_type == 'views-asc':
-            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('views')
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("published_date").reverse()
+        elif sort_type == "date-asc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("published_date")
+        elif sort_type == "views-desc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("views").reverse()
+        elif sort_type == "views-asc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("views")
     else:
         if sort_type == "date-desc":
-            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date').reverse()
-        elif sort_type == 'date-asc':
-            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-        elif sort_type == 'views-desc':
-            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('views').reverse()
-        elif sort_type == 'views-asc':
-            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('views')
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("published_date").reverse()
+        elif sort_type == "date-asc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("published_date")
+        elif sort_type == "views-desc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("views").reverse()
+        elif sort_type == "views-asc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("views")
     return pagination(request, posts)
+
+
+def archives(request):
+    all_category = []
+    all_tag = []
+    users = [u.username for u in User.objects.all()]
+    login_user = request.user.username
+    if login_user not in users:
+        date_list = Post.objects.filter(visible__name="public").dates("published_date", "month", order="DESC")
+        category_by_post_view = Category.objects.annotate(blog_views=Count("post__views")).filter(post__visible__name="public").order_by("-blog_views")
+        tag_by_post_view = Tag.objects.annotate(blog_views=Sum("post__views")).filter(post__visible__name="public").order_by("-blog_views")
+        for c in category_by_post_view:
+            all_category.append(c.name)
+        for t in tag_by_post_view:
+            all_tag.append(t.name)
+    else:
+        date_list = Post.objects.dates("published_date", "month", order="DESC")
+        category_by_post_view = Category.objects.annotate(blog_views=Count("post__views")).order_by("-blog_views")
+        tag_by_post_view = Tag.objects.annotate(blog_views=Sum("post__views")).order_by("-blog_views")
+        for c in category_by_post_view:
+            all_category.append(c.name)
+        for t in tag_by_post_view:
+            all_tag.append(t.name)
+    return render(request, "blog/category.html", context={"date_list": date_list, "category_list": all_category, "tag_list": all_tag})
 
 
 def download_bak(request):

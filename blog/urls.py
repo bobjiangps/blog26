@@ -10,6 +10,7 @@ urlpatterns = [
     path('update-comment-rate-<int:comment_id>/', views.update_comment_rate, name='update-comment-rate'),
     path('update-reply-rate-<int:reply_id>/', views.update_reply_rate, name='update-reply-rate'),
     path('blog-list/sort-by-<str:sort_type>/', views.blog_list_sort, name='blog-list-sort'),
+    path('categorization/', views.archives, name='archives'),
     # path('error', views.show_error, name="error"),
     # path('login', views.index_articles, name="login"),
     path('api/posts/', views_api.PostViewSet.as_view({'get': 'list', 'post': 'create'}), name='posts-api'),

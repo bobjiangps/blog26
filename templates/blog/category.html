@@ -1,0 +1,79 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="bi bi-tags"></i> 类目
+            </h1>
+            <p class="page-description">通过分类、标签和发布日期范围来查看文章</p>
+
+            <!-- Search Bar -->
+            <div class="search-container mb-4">
+                <form class="search-form d-flex" onsubmit="return handleSearch(this)">
+                    <input type="search" class="form-control form-control-lg me-2" placeholder="Search articles, topics, or tags..." aria-label="Search">
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section">
+        <div class="container">
+            <h2 class="section-title mb-4">
+                <i class="bi bi-folder"></i> 分类
+            </h2>
+            <div class="row g-4">
+                {% for c in category_list %}
+                <div class="col-md-6 col-lg-4">
+                    <a href="blog-list.html" class="category-card">
+                        <div class="category-info">
+                            <h4>{{c}}</h4>
+                        </div>
+                        <i class="bi bi-arrow-right category-arrow"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Tags Section -->
+    <section class="tags-section">
+        <div class="container">
+            <h2 class="section-title mb-4">
+                <i class="bi bi-tags"></i> 标签
+            </h2>
+            <div class="tags-cloud">
+                {% for t in tag_list %}
+                <a href="blog-list.html" class="tag-cloud-item tag-xl">{{t}}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Archives Section -->
+    <section class="archives-section">
+        <div class="container">
+            <h2 class="section-title mb-4">
+                <i class="bi bi-calendar3"></i> 日期
+            </h2>
+            <div class="row g-3">
+                {% for date in date_list %}
+                <div class="col-md-3 col-sm-6">
+                    <a href="blog-list.html" class="archive-item">
+                        <i class="bi bi-calendar2-check"></i>
+                        <div>
+                            <strong>{{ date.year }} 年 {{ date.month}} 月</strong>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
