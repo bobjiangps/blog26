@@ -223,6 +223,7 @@
                     <h2 class="section-title">
                         <i class="bi bi-lightbulb"></i> 相邻文章
                     </h2>
+                    {% load replace_html_tags %}
                     <div class="row g-4">
                         <div class="col-md-4">
                             {% if post_next %}
@@ -251,7 +252,7 @@
                                     </p>
                                     {% else %}
                                     <span class="blog-summary">
-                                        {{ post_next.content|safe|truncatechars:50}}...
+                                        {{ post_next.content|safe|replace_tags|truncatechars:50}}...
                                     </span>
                                     {% endif %}
                                 </div>
@@ -308,7 +309,7 @@
                                     </p>
                                     {% else %}
                                     <span class="blog-summary">
-                                        {{ post_prev.content|safe|truncatechars:50}}...
+                                        {{ post_prev.content|safe|replace_tags|truncatechars:50}}...
                                     </span>
                                     {% endif %}
                                 </div>

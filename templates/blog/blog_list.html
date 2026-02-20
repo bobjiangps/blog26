@@ -7,23 +7,23 @@
             <div class="row">
                 <div class="col-lg-8">
                     <h1 class="page-title">
-                        <i class="bi bi-journal-text"></i> Blog Posts
+                        <i class="bi bi-journal-text"></i> 文章列表
                     </h1>
-                    <p class="page-description">Explore our collection of technical articles, tutorials, and insights</p>
+                    <p class="page-description">探索, 发现, 搜索, 排序</p>
 
                     <!-- Search Bar -->
                     <div class="search-container mb-4">
                         <form class="search-form d-flex" onsubmit="return handleSearch(this)">
-                            <input type="search" class="form-control form-control-lg me-2" placeholder="Search articles, topics, or tags..." aria-label="Search">
+                            <input type="search" class="form-control form-control-lg me-2" placeholder="输入关键词..." aria-label="Search">
                             <button class="btn btn-primary btn-lg" type="submit">
-                                <i class="bi bi-search"></i> Search
+                                <i class="bi bi-search"></i> 搜索
                             </button>
                         </form>
                     </div>
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <a href="blog-edit.html" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle"></i> Create New Post
+                        <i class="bi bi-plus-circle"></i> 新建文章
                     </a>
                 </div>
             </div>
@@ -36,19 +36,20 @@
             <!-- Sort Controls -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="results-info">
-                    <span class="text-muted">Showing <strong>8</strong> articles</span>
+                    <span class="text-muted">展示 <strong>{{posts|length}}</strong> 篇文章 &ensp; 每页 <strong>{{part_posts|length}}</strong> 篇</span>
                 </div>
                 <div class="sort-controls">
-                    <label for="sortBy" class="me-2 text-muted">Sort by:</label>
+                    <label for="sortBy" class="me-2 text-muted">排序:</label>
                     <select id="sortBy" class="form-select form-select-sm d-inline-block" style="width: 160px;" onchange="handleSort(this.value)">
-                        <option value="date-desc" selected>Newest First</option>
-                        <option value="date-asc">Oldest First</option>
-                        <option value="views-desc">Most Viewed</option>
-                        <option value="views-asc">Least Viewed</option>
+                        <option value="date-desc" selected>发布最近</option>
+                        <option value="date-asc">发布最久</option>
+                        <option value="views-desc">阅读最多</option>
+                        <option value="views-asc">阅读最少</option>
                     </select>
                 </div>
             </div>
 
+            {% load replace_html_tags %}
             <div class="row g-4">
                 <!-- Blog Post 1 -->
                 <div class="col-12">
@@ -65,33 +66,46 @@
                             <div class="col-md-8">
                                 <div class="blog-list-body">
                                     <div class="blog-meta">
-                                        <span class="blog-category">
-                                            <i class="bi bi-folder"></i> Web Development
-                                        </span>
+                                        <div class="blog-category-all">
+                                        {% if part_posts.0.category %}
+                                            {% for c in part_posts.0.category.all %}
+                                            <span class="blog-category">
+                                                <i class="bi bi-folder"></i> {{c.name}}
+                                            </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </div>
                                         <span class="blog-views">
-                                            <i class="bi bi-eye"></i> 12,543 views
+                                            <i class="bi bi-eye"></i> {{part_posts.0.views}} 阅读
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="blog-detail.html">Building Scalable Microservices with Node.js and Docker</a>
+                                        <a href="{% url 'blog-detail' part_posts.0.id %}">{{ part_posts.0.title }}</a>
                                     </h3>
+                                    {% if part_posts.summary %}
                                     <p class="blog-list-summary">
-                                        Learn how to design, develop, and deploy production-ready microservices architecture using Node.js, Docker containers, and Kubernetes orchestration. This comprehensive guide covers everything from basic concepts to advanced deployment strategies.
+                                        {{part_posts.0.summary}}
                                     </p>
+                                    {% else %}
+                                    <span class="blog-list-summary">
+                                        {{ part_posts.0.content|safe|replace_tags|truncatechars:150}}...
+                                    </span>
+                                    {% endif %}
+                                    {% if part_posts.0.tag %}
                                     <div class="blog-tags mb-3">
-                                        <span class="tag">Node.js</span>
-                                        <span class="tag">Docker</span>
-                                        <span class="tag">Microservices</span>
-                                        <span class="tag">Kubernetes</span>
+                                        {% for t in part_posts.0.tag.all %}
+                                        <span class="tag">{{t.name}}</span>
+                                        {% endfor %}
                                     </div>
+                                    {% endif %}
                                     <div class="blog-footer">
                                         <div class="author-info">
                                             <i class="bi bi-person-circle"></i>
-                                            <span>Alex Chen</span>
+                                            <span>{{part_posts.0.author.username}}</span>
                                         </div>
                                         <div class="post-date">
                                             <i class="bi bi-calendar"></i>
-                                            <span>Feb 1, 2026</span>
+                                            <span>{{part_posts.0.published_date}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -101,6 +115,7 @@
                 </div>
 
                 <!-- Blog Post 2 -->
+                {% if part_posts|length > 1 %}
                 <div class="col-12">
                     <article class="blog-list-card">
                         <div class="row g-0">
@@ -114,33 +129,46 @@
                             <div class="col-md-8">
                                 <div class="blog-list-body">
                                     <div class="blog-meta">
-                                        <span class="blog-category">
-                                            <i class="bi bi-folder"></i> Security
-                                        </span>
+                                        <div class="blog-category-all">
+                                        {% if part_posts.1.category %}
+                                            {% for c in part_posts.1.category.all %}
+                                            <span class="blog-category">
+                                                <i class="bi bi-folder"></i> {{c.name}}
+                                            </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </div>
                                         <span class="blog-views">
-                                            <i class="bi bi-eye"></i> 9,821 views
+                                            <i class="bi bi-eye"></i> {{part_posts.1.views}} 阅读
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="blog-detail.html">Complete Guide to API Security: Authentication & Authorization</a>
+                                        <a href="{% url 'blog-detail' part_posts.1.id %}">{{ part_posts.1.title }}</a>
                                     </h3>
+                                    {% if part_posts.summary %}
                                     <p class="blog-list-summary">
-                                        Master API security fundamentals including JWT tokens, OAuth 2.0, API keys, rate limiting, and best practices for protecting your web services. Learn how to implement robust security measures in your applications.
+                                        {{part_posts.1.summary}}
                                     </p>
+                                    {% else %}
+                                    <span class="blog-list-summary">
+                                        {{ part_posts.1.content|safe|replace_tags|truncatechars:150 }}...
+                                    </span>
+                                    {% endif %}
+                                    {% if part_posts.1.tag %}
                                     <div class="blog-tags mb-3">
-                                        <span class="tag">Security</span>
-                                        <span class="tag">API</span>
-                                        <span class="tag">OAuth</span>
-                                        <span class="tag">JWT</span>
+                                        {% for t in part_posts.1.tag.all %}
+                                        <span class="tag">{{t.name}}</span>
+                                        {% endfor %}
                                     </div>
+                                    {% endif %}
                                     <div class="blog-footer">
                                         <div class="author-info">
                                             <i class="bi bi-person-circle"></i>
-                                            <span>Sarah Johnson</span>
+                                            <span>{{part_posts.1.author.username}}</span>
                                         </div>
                                         <div class="post-date">
                                             <i class="bi bi-calendar"></i>
-                                            <span>Jan 30, 2026</span>
+                                            <span>{{part_posts.1.published_date}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -148,8 +176,10 @@
                         </div>
                     </article>
                 </div>
+                {% endif %}
 
                 <!-- Blog Post 3 -->
+                {% if part_posts|length > 2 %}
                 <div class="col-12">
                     <article class="blog-list-card">
                         <div class="row g-0">
@@ -163,32 +193,46 @@
                             <div class="col-md-8">
                                 <div class="blog-list-body">
                                     <div class="blog-meta">
-                                        <span class="blog-category">
-                                            <i class="bi bi-folder"></i> Performance
-                                        </span>
+                                        <div class="blog-category-all">
+                                        {% if part_posts.2.category %}
+                                            {% for c in part_posts.2.category.all %}
+                                            <span class="blog-category">
+                                                <i class="bi bi-folder"></i> {{c.name}}
+                                            </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </div>
                                         <span class="blog-views">
-                                            <i class="bi bi-eye"></i> 8,234 views
+                                            <i class="bi bi-eye"></i> {{part_posts.2.views}} 阅读
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="blog-detail.html">React Performance Optimization Techniques</a>
+                                        <a href="{% url 'blog-detail' part_posts.2.id %}">{{ part_posts.0.title }}</a>
                                     </h3>
+                                    {% if part_posts.summary %}
                                     <p class="blog-list-summary">
-                                        Discover advanced strategies to optimize React applications for better performance and user experience. Includes memoization, code splitting, lazy loading, and React.memo best practices.
+                                        {{part_posts.2.summary}}
                                     </p>
+                                    {% else %}
+                                    <span class="blog-list-summary">
+                                        {{ part_posts.2.content|safe|replace_tags|truncatechars:150}}...
+                                    </span>
+                                    {% endif %}
+                                    {% if part_posts.2.tag %}
                                     <div class="blog-tags mb-3">
-                                        <span class="tag">React</span>
-                                        <span class="tag">Performance</span>
-                                        <span class="tag">Optimization</span>
+                                        {% for t in part_posts.2.tag.all %}
+                                        <span class="tag">{{t.name}}</span>
+                                        {% endfor %}
                                     </div>
+                                    {% endif %}
                                     <div class="blog-footer">
                                         <div class="author-info">
                                             <i class="bi bi-person-circle"></i>
-                                            <span>Mike Rodriguez</span>
+                                            <span>{{part_posts.2.author.username}}</span>
                                         </div>
                                         <div class="post-date">
                                             <i class="bi bi-calendar"></i>
-                                            <span>Jan 28, 2026</span>
+                                            <span>{{part_posts.2.published_date}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -196,8 +240,10 @@
                         </div>
                     </article>
                 </div>
+                {% endif %}
 
                 <!-- Blog Post 4 -->
+                {% if part_posts|length > 3 %}
                 <div class="col-12">
                     <article class="blog-list-card">
                         <div class="row g-0">
@@ -211,32 +257,46 @@
                             <div class="col-md-8">
                                 <div class="blog-list-body">
                                     <div class="blog-meta">
-                                        <span class="blog-category">
-                                            <i class="bi bi-folder"></i> Database
-                                        </span>
+                                        <div class="blog-category-all">
+                                        {% if part_posts.3.category %}
+                                            {% for c in part_posts.3.category.all %}
+                                            <span class="blog-category">
+                                                <i class="bi bi-folder"></i> {{c.name}}
+                                            </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </div>
                                         <span class="blog-views">
-                                            <i class="bi bi-eye"></i> 7,512 views
+                                            <i class="bi bi-eye"></i> {{part_posts.3.views}} 阅读
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="blog-detail.html">PostgreSQL vs MongoDB: Choosing the Right Database</a>
+                                        <a href="{% url 'blog-detail' part_posts.3.id %}">{{ part_posts.3.title }}</a>
                                     </h3>
+                                    {% if part_posts.summary %}
                                     <p class="blog-list-summary">
-                                        A comprehensive comparison of relational and NoSQL databases to help you make the right choice for your project. Covers data modeling, performance, scalability, and use cases.
+                                        {{part_posts.3.summary}}
                                     </p>
+                                    {% else %}
+                                    <span class="blog-list-summary">
+                                        {{ part_posts.3.content|safe|replace_tags|truncatechars:150}}...
+                                    </span>
+                                    {% endif %}
+                                    {% if part_posts.3.tag %}
                                     <div class="blog-tags mb-3">
-                                        <span class="tag">PostgreSQL</span>
-                                        <span class="tag">MongoDB</span>
-                                        <span class="tag">Database</span>
+                                        {% for t in part_posts.3.tag.all %}
+                                        <span class="tag">{{t.name}}</span>
+                                        {% endfor %}
                                     </div>
+                                    {% endif %}
                                     <div class="blog-footer">
                                         <div class="author-info">
                                             <i class="bi bi-person-circle"></i>
-                                            <span>Emily Zhang</span>
+                                            <span>{{part_posts.3.author.username}}</span>
                                         </div>
                                         <div class="post-date">
                                             <i class="bi bi-calendar"></i>
-                                            <span>Jan 25, 2026</span>
+                                            <span>{{part_posts.3.published_date}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -244,8 +304,10 @@
                         </div>
                     </article>
                 </div>
+                {% endif %}
 
                 <!-- Blog Post 5 -->
+                {% if part_posts|length > 4 %}
                 <div class="col-12">
                     <article class="blog-list-card">
                         <div class="row g-0">
@@ -259,32 +321,46 @@
                             <div class="col-md-8">
                                 <div class="blog-list-body">
                                     <div class="blog-meta">
-                                        <span class="blog-category">
-                                            <i class="bi bi-folder"></i> Cloud
-                                        </span>
+                                        <div class="blog-category-all">
+                                        {% if part_posts.4.category %}
+                                            {% for c in part_posts.4.category.all %}
+                                            <span class="blog-category">
+                                                <i class="bi bi-folder"></i> {{c.name}}
+                                            </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </div>
                                         <span class="blog-views">
-                                            <i class="bi bi-eye"></i> 6,892 views
+                                            <i class="bi bi-eye"></i> {{part_posts.4.views}} 阅读
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="blog-detail.html">AWS Lambda: Serverless Architecture Best Practices</a>
+                                        <a href="{% url 'blog-detail' part_posts.4.id %}">{{ part_posts.4.title }}</a>
                                     </h3>
+                                    {% if part_posts.summary %}
                                     <p class="blog-list-summary">
-                                        Learn how to build cost-effective and scalable applications using AWS Lambda functions. This guide covers function design, cold starts, triggers, and monitoring.
+                                        {{part_posts.4.summary}}
                                     </p>
+                                    {% else %}
+                                    <span class="blog-list-summary">
+                                        {{ part_posts.4.content|safe|replace_tags|truncatechars:150}}...
+                                    </span>
+                                    {% endif %}
+                                    {% if part_posts.4.tag %}
                                     <div class="blog-tags mb-3">
-                                        <span class="tag">AWS</span>
-                                        <span class="tag">Serverless</span>
-                                        <span class="tag">Lambda</span>
+                                        {% for t in part_posts.4.tag.all %}
+                                        <span class="tag">{{t.name}}</span>
+                                        {% endfor %}
                                     </div>
+                                    {% endif %}
                                     <div class="blog-footer">
                                         <div class="author-info">
                                             <i class="bi bi-person-circle"></i>
-                                            <span>David Kim</span>
+                                            <span>{{part_posts.4.author.username}}</span>
                                         </div>
                                         <div class="post-date">
                                             <i class="bi bi-calendar"></i>
-                                            <span>Jan 22, 2026</span>
+                                            <span>{{part_posts.4.published_date}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -292,26 +368,35 @@
                         </div>
                     </article>
                 </div>
+                {% endif %}
             </div>
 
             <!-- Pagination -->
             <nav aria-label="Blog pagination" class="mt-5">
                 <ul class="pagination justify-content-center">
+                    {% if part_posts.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ part_posts.previous_page_number }}" tabindex="-1">
+                    {% else %}
                     <li class="page-item disabled">
                         <a class="page-link" href="#" tabindex="-1">
-                            <i class="bi bi-chevron-left"></i> Previous
+                    {% endif %}
+                            <i class="bi bi-chevron-left"></i> 前一页
                         </a>
                     </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                    <li class="page-item"><a class="page-link">{{ part_posts.number }} / {{ part_posts.paginator.num_pages }}</a></li>
+                    {% if part_posts.has_next %}
                     <li class="page-item">
+                        <a class="page-link" href="?page={{ part_posts.next_page_number }}">
+                    {% else %}
+                    <li class="page-item disabled">
                         <a class="page-link" href="#">
-                            Next <i class="bi bi-chevron-right"></i>
+                    {% endif %}
+                            后一页 <i class="bi bi-chevron-right"></i>
                         </a>
                     </li>
+                    <input class="form-control form-control-sm" id="page-number-input" style="width:4rem;">
+                    <button class="btn btn-outline-secondary btn-sm" id="page-jump" onclick="window.location.href='?page='+document.getElementById('page-number-input').value">跳转</button>
                 </ul>
             </nav>
         </div>

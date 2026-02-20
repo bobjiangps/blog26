@@ -62,7 +62,7 @@ def pagination(request, filter_posts):
     except EmptyPage:
         # if page is out of range, deliver last page of results
         part_posts = paginator.page(paginator.num_pages)
-    return render(request, "blog/blog_list.html", {"posts": part_posts})
+    return render(request, "blog/blog_list.html", {"posts": filter_posts, "part_posts": part_posts})
 
 
 def download_bak(request):

@@ -90,6 +90,7 @@
     </section>
 
     <!-- Most Viewed Posts -->
+    {% load replace_html_tags %}
     <section class="featured-section">
         <div class="container">
             <div class="section-header">
@@ -129,7 +130,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:150}}...
+                                {{ post.content|safe|replace_tags|truncatechars:150}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
@@ -188,7 +189,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:100}}...
+                                {{ post.content|safe|replace_tags|truncatechars:100}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
@@ -236,7 +237,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:100}}...
+                                {{ post.content|safe|replace_tags|truncatechars:100}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
@@ -284,7 +285,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:100}}...
+                                {{ post.content|safe|replace_tags|truncatechars:100}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
@@ -303,6 +304,7 @@
     </section>
 
     <!-- Newest Published -->
+    {% load replace_html_tags %}
     <section class="featured-section bg-light">
         <div class="container">
             <div class="section-header">
@@ -342,7 +344,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:150}}...
+                                {{ post.content|safe|replace_tags|truncatechars:150}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
@@ -401,7 +403,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:100}}...
+                                {{ post.content|safe|replace_tags|truncatechars:100}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
@@ -449,7 +451,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:100}}...
+                                {{ post.content|safe|replace_tags|truncatechars:100}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
@@ -497,7 +499,7 @@
                             </p>
                             {% else %}
                             <span class="blog-summary">
-                                {{ post.content|safe|truncatechars:100}}...
+                                {{ post.content|safe|replace_tags|truncatechars:100}}...
                             </span>
                             {% endif %}
                             {% if post.tag %}
