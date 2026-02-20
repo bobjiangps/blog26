@@ -401,4 +401,22 @@
             </nav>
         </div>
     </section>
+
+    <script type="text/javascript">
+        if (window.location.href.indexOf("sort-by-date-desc") >= 0) {
+            document.querySelector('#sortBy').value = 'date-desc';
+        }
+        else if (window.location.href.indexOf("sort-by-date-asc") >= 0) {
+            document.querySelector('#sortBy').value = 'date-asc';
+        }
+        else if (window.location.href.indexOf("sort-by-views-desc") >= 0) {
+            document.querySelector('#sortBy').value = 'views-desc';
+        }
+        else if (window.location.href.indexOf("sort-by-views-asc") >= 0) {
+            document.querySelector('#sortBy').value = 'views-asc';
+        }
+        else {
+            document.querySelector('#sortBy').value = 'date-desc';
+        }
+    </script>
 {% endblock %}

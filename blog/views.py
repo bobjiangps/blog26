@@ -65,6 +65,31 @@ def pagination(request, filter_posts):
     return render(request, "blog/blog_list.html", {"posts": filter_posts, "part_posts": part_posts})
 
 
+def blog_list_sort(request, sort_type):
+    users = [u.username for u in User.objects.all()]
+    login_user = request.user.username
+    posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('published_date').reverse()
+    if login_user not in users:
+        if sort_type == "date-desc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('published_date').reverse()
+        elif sort_type == 'date-asc':
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('published_date')
+        elif sort_type == 'views-desc':
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('views').reverse()
+        elif sort_type == 'views-asc':
+            posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name='public').order_by('views')
+    else:
+        if sort_type == "date-desc":
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date').reverse()
+        elif sort_type == 'date-asc':
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+        elif sort_type == 'views-desc':
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('views').reverse()
+        elif sort_type == 'views-asc':
+            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('views')
+    return pagination(request, posts)
+
+
 def download_bak(request):
     if request.user.is_authenticated:
         bak_file = "other/db_bak/django_blog_v3-latest.sql"

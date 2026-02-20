@@ -885,54 +885,67 @@ function handleURLParams() {
  * Sort blog posts
  */
 function handleSort(sortValue) {
-    const blogContainer = document.querySelector('.blog-list-section .row.g-4');
-    if (!blogContainer) return;
-
-    const blogPosts = Array.from(blogContainer.querySelectorAll('.col-12'));
-
-    // Extract sort data from each post
-    const postsData = blogPosts.map(post => {
-        const viewsText = post.querySelector('.blog-views')?.textContent || '0';
-        const views = parseInt(viewsText.replace(/[^0-9]/g, '')) || 0;
-
-        const dateText = post.querySelector('.post-date span')?.textContent || '';
-        const date = new Date(dateText);
-
-        return {
-            element: post,
-            views: views,
-            date: date
-        };
-    });
-
-    // Sort based on selection
-    postsData.sort((a, b) => {
-        switch(sortValue) {
-            case 'date-desc':
-                return b.date - a.date;
-            case 'date-asc':
-                return a.date - b.date;
-            case 'views-desc':
-                return b.views - a.views;
-            case 'views-asc':
-                return a.views - b.views;
-            default:
-                return 0;
-        }
-    });
-
-    // Clear and re-append in sorted order
-    blogContainer.innerHTML = '';
-    postsData.forEach(item => {
-        blogContainer.appendChild(item.element);
-    });
+//    const blogContainer = document.querySelector('.blog-list-section .row.g-4');
+//    if (!blogContainer) return;
+//
+//    const blogPosts = Array.from(blogContainer.querySelectorAll('.col-12'));
+//
+//    // Extract sort data from each post
+//    const postsData = blogPosts.map(post => {
+//        const viewsText = post.querySelector('.blog-views')?.textContent || '0';
+//        const views = parseInt(viewsText.replace(/[^0-9]/g, '')) || 0;
+//
+//        const dateText = post.querySelector('.post-date span')?.textContent || '';
+//        const date = new Date(dateText);
+//
+//        return {
+//            element: post,
+//            views: views,
+//            date: date
+//        };
+//    });
+//
+//    // Sort based on selection
+//    postsData.sort((a, b) => {
+//        switch(sortValue) {
+//            case 'date-desc':
+//                return b.date - a.date;
+//            case 'date-asc':
+//                return a.date - b.date;
+//            case 'views-desc':
+//                return b.views - a.views;
+//            case 'views-asc':
+//                return a.views - b.views;
+//            default:
+//                return 0;
+//        }
+//    });
+//
+//    // Clear and re-append in sorted order
+//    blogContainer.innerHTML = '';
+//    postsData.forEach(item => {
+//        blogContainer.appendChild(item.element);
+//    });
 
     // Show notification
     const sortLabels = {
-        'date-desc': 'Newest First',
-        'date-asc': 'Oldest First',
-        'views-desc': 'Most Viewed',
-        'views-asc': 'Least Viewed'
+        'date-desc': '发布最近',
+        'date-asc': '发布最久',
+        'views-desc': '阅读最多',
+        'views-asc': '阅读最少'
     };
-    showNotification(`Sorted by: ${sortLabels[sortValue]}`, 'success');
+    showNotification(`排序: ${sortLabels[sortValue]}`, 'success');
+
+    setTimeout(() => {
+        // go to sort page after wait time
+        const sortUrls = {
+            'date-desc': '/bobjiang/blog-list/sort-by-date-desc/',
+            'date-asc': '/bobjiang/blog-list/sort-by-date-asc/',
+            'views-desc': '/bobjiang/blog-list/sort-by-views-desc/',
+            'views-asc': '/bobjiang/blog-list/sort-by-views-asc/'
+        };
+        const urlPath = window.location.pathname;
+        const urlPrefix = window.location.href.split(urlPath)[0];
+        window.location.href = urlPrefix + sortUrls[sortValue];
+    }, 800);
 }
