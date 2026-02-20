@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, StreamingHttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Post, Category, Tag, Comment, ReplyComment
 from pb.settings import BASE_DIR
 from pathlib import Path
@@ -38,6 +39,30 @@ def blog_detail(request, post_id):
     post_prev = Post.objects.filter(visible__name="public").filter(id__lt=post_id).order_by('-id').first()
     post_next = Post.objects.filter(visible__name="public").filter(id__gt=post_id).order_by('id').first()
     return render(request, "blog/blog_detail.html", {"post": post, "comments": all_comments, "comment_amount": comment_amount, "post_prev": post_prev, "post_next": post_next})
+
+
+def blog_list(request):
+    users = [u.username for u in User.objects.all()]
+    login_user = request.user.username
+    if login_user not in users:
+        posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("published_date").reverse()
+    else:
+        posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date').reverse()
+    return pagination(request, posts)
+
+
+def pagination(request, filter_posts):
+    paginator = Paginator(filter_posts, 5)
+    page = request.GET.get("page", 1)
+    try:
+        part_posts = paginator.page(page)
+    except PageNotAnInteger:
+        # if page is not an integer, deliver first page.
+        part_posts = paginator.page(1)
+    except EmptyPage:
+        # if page is out of range, deliver last page of results
+        part_posts = paginator.page(paginator.num_pages)
+    return render(request, "blog/blog_list.html", {"posts": part_posts})
 
 
 def download_bak(request):

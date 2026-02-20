@@ -37,7 +37,7 @@
                     <span>BYINCD</span>
                 </a>
                 <ul class="nav-links">
-                    <li><a href="/bobjiang/" onclick="scrollToSection(0)">Blog</a></li>
+                    <li><a href="{% url 'index' %}" onclick="scrollToSection(0)">Blog</a></li>
                     <li><a href="#tools" onclick="scrollToSection(1)">Tools</a></li>
                     <li><a href="#diary" onclick="scrollToSection(2)">Diary</a></li>
                 </ul>
@@ -94,7 +94,7 @@
                             {% endif %}
                         </div>
                         
-                        <a href="/bobjiang/" class="visit-btn">
+                        <a href="{% url 'index' %}" class="visit-btn">
                             <span>$ CD BLOG/</span>
                             <i class="bi bi-arrow-right"></i>
                         </a>

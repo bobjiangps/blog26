@@ -3,11 +3,12 @@ from . import views, views_api
 
 
 urlpatterns = [
-    path('', views.index_articles, name="index"),
-    path('article-01<int:post_id>/', views.blog_detail, name="blog-detail"),
+    path('', views.index_articles, name='index'),
+    path('blog-list/', views.blog_list, name='blog-list'),
+    path('article-01<int:post_id>/', views.blog_detail, name='blog-detail'),
     path('download_bak/', views.download_bak, name='download-bak'),
-    path('update-comment-rate-<int:comment_id>/', views.update_comment_rate, name="update-comment-rate"),
-    path('update-reply-rate-<int:reply_id>/', views.update_reply_rate, name="update-reply-rate"),
+    path('update-comment-rate-<int:comment_id>/', views.update_comment_rate, name='update-comment-rate'),
+    path('update-reply-rate-<int:reply_id>/', views.update_reply_rate, name='update-reply-rate'),
     # path('error', views.show_error, name="error"),
     # path('login', views.index_articles, name="login"),
     path('api/posts/', views_api.PostViewSet.as_view({'get': 'list', 'post': 'create'}), name='posts-api'),

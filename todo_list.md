@@ -4,8 +4,8 @@
 - accounting migration
 - sign in and sign out
 - deploy
-- every page and publish article
-- error page
+- every page and publish article and edit article
+- error page and permission
 - baidu stat and google ad
 - pagination
 - sort in list page

@@ -1,5 +1,6 @@
 from .models import Post, Comment, ReplyComment
 from .serializers import PostSerializer, CommentSerializer, ReplySerializer, CommentUpdateSerializer, ReplyUpdateSerializer
+from django.db.models import Q
 
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
@@ -11,8 +12,12 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 class PostViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Post.objects.filter(visible__name="public").order_by("-published_date")
+    # queryset = Post.objects.filter(visible__name="public").order_by("-published_date")
     serializer_class = PostSerializer
+
+    def get_queryset(self):
+        queryset = Post.objects.filter(Q(visible__name="public") | Q(author=self.request.user.id)).order_by("-published_date")
+        return queryset
 
     def destroy(self, request, *args, **kwargs):
         return Response({"message": "delete action is not allowed", "code": "200"}, status=status.HTTP_200_OK)
