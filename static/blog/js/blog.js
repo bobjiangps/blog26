@@ -537,6 +537,8 @@ window.handleSort = handleSort;
 window.handleAddComment = handleAddComment;
 window.toggleReplyForm = toggleReplyForm;
 window.handleAddReply = handleAddReply;
+window.increaseCommentRate = increaseCommentRate;
+window.increaseReplyRate = increaseReplyRate;
 
 /**
  * Handle adding a new comment
@@ -635,6 +637,52 @@ function handleAddComment(event) {
     }, 200);
 
     return false;
+}
+
+/**
+ * increase comment rate
+ */
+function increaseCommentRate(button) {
+    const commentCard = button.closest('.comment-card');
+    var commentId = commentCard.querySelector('#commentInfo').getAttribute('comment-id');
+    innerBefore = button.innerHTML;
+    var s1 = innerBefore.split("(");
+    var s2 = s1[1].split(")");
+    var numIncreased = parseInt(s2[0]) + 1;
+    button.innerHTML = [s1[0], "(", numIncreased, ")"].join("");
+
+    // Post data
+    const urlPath = window.location.pathname;
+    const urlPrefix = window.location.href.split(urlPath)[0];
+    fetch(urlPrefix + "/bobjiang/update-comment-rate-" + commentId)
+        .then((response) => response.text())
+        .then(text => {console.log(text);})
+        .catch(err=>{
+            console.log(err);
+        });;
+}
+
+/**
+ * increase reply rate
+ */
+function increaseReplyRate(button) {
+    const commentCard = button.closest('.comment-card, .reply-card');
+    var replyId = commentCard.querySelector('#replyInfo').getAttribute('reply-id');
+    innerBefore = button.innerHTML;
+    var s1 = innerBefore.split("(");
+    var s2 = s1[1].split(")");
+    var numIncreased = parseInt(s2[0]) + 1;
+    button.innerHTML = [s1[0], "(", numIncreased, ")"].join("");
+
+    // Post data
+    const urlPath = window.location.pathname;
+    const urlPrefix = window.location.href.split(urlPath)[0];
+    fetch(urlPrefix + "/bobjiang/update-reply-rate-" + replyId)
+        .then((response) => response.text())
+        .then(text => {console.log(text);})
+        .catch(err=>{
+            console.log(err);
+        });;
 }
 
 /**

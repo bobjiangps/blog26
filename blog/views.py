@@ -42,7 +42,7 @@ def blog_detail(request, post_id):
 
 def download_bak(request):
     if request.user.is_authenticated:
-        bak_file = "other/db_bak/django-blog-v3-latest.sql"
+        bak_file = "other/db_bak/django_blog_v3-latest.sql"
         filename = Path(bak_file).name
         abs_path = Path(BASE_DIR).joinpath(bak_file)
         if abs_path.exists():
@@ -55,3 +55,15 @@ def download_bak(request):
             return HttpResponse('<h1>Cannot find the file</h1>')
     else:
         return render(request, "blog/error.html", {"error_type": "403"})
+
+
+def update_comment_rate(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    comment.increase_rate()
+    return HttpResponse("comment rate increased")
+
+
+def update_reply_rate(request, reply_id):
+    reply = get_object_or_404(ReplyComment, pk=reply_id)
+    reply.increase_rate()
+    return HttpResponse("reply rate increased")

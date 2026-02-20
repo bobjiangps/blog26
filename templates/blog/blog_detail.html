@@ -132,7 +132,7 @@
                                         <p>{{c.content}}</p>
                                     </div>
                                     <div class="comment-actions">
-                                        <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> 有用 ({{c.rate}})</button>
+                                        <button class="btn btn-sm btn-link" onclick="increaseCommentRate(this)"><i class="bi bi-hand-thumbs-up"></i> 有用 ({{c.rate}})</button>
                                         <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> 回复</button>
                                     </div>
 
@@ -166,7 +166,7 @@
                                                 <div class="comment-avatar">
                                                     <i class="bi bi-person-circle"></i>
                                                 </div>
-                                                <div class="comment-info" id="replyInfo" reply-id={{r.id}}>
+                                                <div class="comment-info" id="replyInfo" reply-id={{rc.id}}>
                                                     <div class="comment-author">{{rc.name}}</div>
                                                     <div class="comment-date">
                                                         <i class="bi bi-clock"></i> {{rc.created_time}}
@@ -177,7 +177,7 @@
                                                 <p><strong>@{{rc.reply_to_name}}</strong> {{rc.content}}</p>
                                             </div>
                                             <div class="comment-actions">
-                                                <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> 有用 ({{rc.rate}})</button>
+                                                <button class="btn btn-sm btn-link" onclick="increaseReplyRate(this)"><i class="bi bi-hand-thumbs-up"></i> 有用 ({{rc.rate}})</button>
                                                 <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> 回复</button>
                                             </div>
 
