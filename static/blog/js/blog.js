@@ -686,9 +686,11 @@ function handleAddReply(event, commentCard) {
 
     const form = event.target;
     const nameInput = form.querySelector('input[type="text"]');
+    const emailInput = form.querySelector('input[type="email"]');
     const textArea = form.querySelector('textarea');
 
     const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
     const text = textArea.value.trim();
 
     if (!name || !text) {
@@ -751,31 +753,6 @@ function handleAddReply(event, commentCard) {
                             <small class="text-muted">${timeStr}</small>
                         </div>
                         <p class="mb-0"><strong>@${replyToName}</strong> ${text}</p>
-                        <div class="comment-actions mt-2">
-                            <button class="btn btn-sm btn-link"><i class="bi bi-hand-thumbs-up"></i> 有用 (0)</button>
-                            <button class="btn btn-sm btn-link" onclick="toggleReplyForm(this)"><i class="bi bi-reply"></i> 回复</button>
-                        </div>
-
-                        <!-- Reply Form (hidden by default) -->
-                        <div class="reply-form-container" style="display: none;">
-                            <form onsubmit="return handleAddReply(event, this.closest('.reply-card'))">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" placeholder="名称" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="email" class="form-control" placeholder="邮件" required>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <textarea class="form-control" rows="3" placeholder="回复内容..." required></textarea>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm">提交回复</button>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="this.closest('.reply-form-container').style.display='none'">取消</button>
-                                </div>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -795,6 +772,37 @@ function handleAddReply(event, commentCard) {
     // Reset form and hide
     form.reset();
     form.closest('.reply-form-container').style.display = 'none';
+
+    // Post data to api
+    const urlPath = window.location.pathname;
+    const urlPrefix = window.location.href.split(urlPath)[0];
+    if (commentCard.classList.contains('reply-card')) {
+        var commentId = commentCard.closest('.comment-card:not(.reply-card)').querySelector('#commentInfo').getAttribute('comment-id');
+    }
+    else {
+        var commentId = commentCard.querySelector('#commentInfo').getAttribute('comment-id');
+    }
+    fetch(urlPrefix + "/bobjiang/api/replies/",
+    {
+        method: "POST",
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          content: text,
+          reply_to: commentId,
+          reply_to_name: replyToName
+        }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          console.log(json);
+        })
+        .catch(err=>{
+            console.log(err);
+        });;
 
     // Show success message
     showNotification('回复信息提交成功!', 'success');

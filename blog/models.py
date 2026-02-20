@@ -77,6 +77,7 @@ class ReplyComment(models.Model):
     content = models.TextField()
     created_time = models.DateTimeField(auto_now_add=True)
     reply_to = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    reply_to_name = models.CharField(max_length=100, default="unknown")
     rate = models.PositiveIntegerField(default=0)
 
     def __str__(self):
