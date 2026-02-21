@@ -80,7 +80,12 @@
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="{% url 'blog-detail' part_posts.0.id %}">{{ part_posts.0.title }}</a>
+                                        <a href="{% url 'blog-detail' part_posts.0.id %}">
+                                            {% if part_posts.0.visible.name == 'private' %}
+                                            [private] -
+                                            {% endif %}
+                                            {{ part_posts.0.title }}
+                                        </a>
                                     </h3>
                                     {% if part_posts.summary %}
                                     <p class="blog-list-summary">
@@ -143,7 +148,12 @@
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="{% url 'blog-detail' part_posts.1.id %}">{{ part_posts.1.title }}</a>
+                                        <a href="{% url 'blog-detail' part_posts.1.id %}">
+                                            {% if part_posts.1.visible.name == 'private' %}
+                                            [private] -
+                                            {% endif %}
+                                            {{ part_posts.1.title }}
+                                        </a>
                                     </h3>
                                     {% if part_posts.summary %}
                                     <p class="blog-list-summary">
@@ -207,7 +217,12 @@
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="{% url 'blog-detail' part_posts.2.id %}">{{ part_posts.2.title }}</a>
+                                        <a href="{% url 'blog-detail' part_posts.2.id %}">
+                                            {% if part_posts.2.visible.name == 'private' %}
+                                            [private] -
+                                            {% endif %}
+                                            {{ part_posts.2.title }}
+                                        </a>
                                     </h3>
                                     {% if part_posts.summary %}
                                     <p class="blog-list-summary">
@@ -271,7 +286,12 @@
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="{% url 'blog-detail' part_posts.3.id %}">{{ part_posts.3.title }}</a>
+                                        <a href="{% url 'blog-detail' part_posts.3.id %}">
+                                            {% if part_posts.3.visible.name == 'private' %}
+                                            [private] -
+                                            {% endif %}
+                                            {{ part_posts.3.title }}
+                                        </a>
                                     </h3>
                                     {% if part_posts.summary %}
                                     <p class="blog-list-summary">
@@ -335,7 +355,12 @@
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="{% url 'blog-detail' part_posts.4.id %}">{{ part_posts.4.title }}</a>
+                                        <a href="{% url 'blog-detail' part_posts.4.id %}">
+                                            {% if part_posts.4.visible.name == 'private' %}
+                                            [private] -
+                                            {% endif %}
+                                            {{ part_posts.4.title }}
+                                        </a>
                                     </h3>
                                     {% if part_posts.summary %}
                                     <p class="blog-list-summary">
