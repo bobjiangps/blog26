@@ -115,6 +115,36 @@ def archives(request):
     return render(request, "blog/category.html", context={"date_list": date_list, "category_list": all_category, "tag_list": all_tag})
 
 
+def archives_date(request, year, month):
+    users = [u.username for u in User.objects.all()]
+    login_user = request.user.username
+    if login_user not in users:
+        posts = Post.objects.filter(visible__name="public").filter(published_date__year=year, published_date__month=month).order_by("views").reverse()
+    else:
+        posts = Post.objects.filter(published_date__year=year, published_date__month=month).order_by("views").reverse()
+    return pagination(request, posts)
+
+
+def archives_category(request, category_name):
+    users = [u.username for u in User.objects.all()]
+    login_user = request.user.username
+    if login_user not in users:
+        posts = Post.objects.filter(visible__name="public").filter(published_date__lte=timezone.now()).filter(category__name=category_name).order_by("views").reverse()
+    else:
+        posts = Post.objects.filter(published_date__lte=timezone.now()).filter(category__name=category_name).order_by("views").reverse()
+    return pagination(request, posts)
+
+
+def archives_tag(request, tag_name):
+    users = [u.username for u in User.objects.all()]
+    login_user = request.user.username
+    if login_user not in users:
+        posts = Post.objects.filter(visible__name="public").filter(published_date__lte=timezone.now()).filter(tag__name=tag_name).order_by("views").reverse()
+    else:
+        posts = Post.objects.filter(published_date__lte=timezone.now()).filter(tag__name=tag_name).order_by("views").reverse()
+    return pagination(request, posts)
+
+
 def download_bak(request):
     if request.user.is_authenticated:
         bak_file = "other/db_bak/django_blog_v3-latest.sql"

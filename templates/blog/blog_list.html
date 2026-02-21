@@ -207,7 +207,7 @@
                                         </span>
                                     </div>
                                     <h3 class="blog-list-title">
-                                        <a href="{% url 'blog-detail' part_posts.2.id %}">{{ part_posts.0.title }}</a>
+                                        <a href="{% url 'blog-detail' part_posts.2.id %}">{{ part_posts.2.title }}</a>
                                     </h3>
                                     {% if part_posts.summary %}
                                     <p class="blog-list-summary">
@@ -403,6 +403,13 @@
     </section>
 
     <script type="text/javascript">
+        if (window.location.href.indexOf("categorization") >= 0) {
+            var targetNode = document.getElementById('sortBy');
+            var parentNode = targetNode.parentNode;
+            targetNode.remove();
+            parentNode.querySelector('label').textContent = '按阅读最多排序';
+        }
+
         if (window.location.href.indexOf("sort-by-date-desc") >= 0) {
             document.querySelector('#sortBy').value = 'date-desc';
         }
