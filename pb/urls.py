@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from blog import views as blog_views
 
 
 urlpatterns = [
@@ -31,3 +32,7 @@ urlpatterns = [
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler403 = blog_views.permission_denied
+handler404 = blog_views.page_not_found
+handler500 = blog_views.internal_error

@@ -65,32 +65,32 @@ function initPasswordToggle() {
 function initFormValidation() {
     // Login Form
     const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const email = this.querySelector('input[type="email"]').value;
-            const password = this.querySelector('input[type="password"]').value;
-
-            if (!email || !password) {
-                showNotification('请填入必要字段', 'warning');
-                return;
-            }
-
-            if (!isValidEmail(email)) {
-                showNotification('请输入有效邮箱地址', 'error');
-                return;
-            }
-
-            // Simulate login
-            showNotification('登录中...', 'info');
-            setTimeout(() => {
-                showNotification('欢迎回来!', 'success');
-                // Redirect to home page
-                // window.location.href = 'index.html';
-            }, 1000);
-        });
-    }
+//    if (loginForm) {
+//        loginForm.addEventListener('submit', function(e) {
+//            e.preventDefault();
+//
+//            const account = this.querySelector('input[type="text"]').value;
+//            const password = this.querySelector('input[type="password"]').value;
+//
+//            if (!account || !password) {
+//                showNotification('请填入必要字段', 'warning');
+//                return;
+//            }
+//
+////            if (!isValidEmail(email)) {
+////                showNotification('请输入有效邮箱地址', 'error');
+////                return;
+////            }
+//
+//            // Simulate login
+//            showNotification('登录中...', 'info');
+////            setTimeout(() => {
+////                showNotification('欢迎回来!', 'success');
+////                // Redirect to home page
+////                // window.location.href = 'index.html';
+////            }, 1000);
+//        });
+//    }
 
     // Editor Form
     const editorForm = document.getElementById('editorForm');
@@ -539,6 +539,7 @@ window.toggleReplyForm = toggleReplyForm;
 window.handleAddReply = handleAddReply;
 window.increaseCommentRate = increaseCommentRate;
 window.increaseReplyRate = increaseReplyRate;
+window.togglePassword = togglePassword;
 
 /**
  * Handle adding a new comment
@@ -948,4 +949,18 @@ function handleSort(sortValue) {
         const urlPrefix = window.location.href.split(urlPath)[0];
         window.location.href = urlPrefix + sortUrls[sortValue];
     }, 800);
+}
+
+
+/**
+ * Toggle Password Visibility
+ */
+function togglePassword(button) {
+    var pwField = button.closest('.input-group').querySelector('#password');
+    if (pwField.type === "password") {
+        pwField.type = "text";
+    }
+    else {
+        pwField.type = "password";
+    }
 }

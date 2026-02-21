@@ -5,6 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, StreamingHttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Sum
+from django.contrib.auth import authenticate, login as d_login, logout as d_logout
+from django.urls import reverse
 from .models import Post, Category, Tag, Comment, ReplyComment
 from pb.settings import BASE_DIR
 from pathlib import Path
@@ -172,3 +174,45 @@ def update_reply_rate(request, reply_id):
     reply = get_object_or_404(ReplyComment, pk=reply_id)
     reply.increase_rate()
     return HttpResponse("reply rate increased")
+
+
+def do_login(request):
+    if request.method == "POST":
+        user_name = request.POST['user-name']
+        user_pw = request.POST['user-pw']
+        user = authenticate(username=user_name, password=user_pw)
+        if user is not None:
+            if user.is_active:
+                d_login(request, user)
+                return redirect(request.session["login_from"])  # go back to page before login
+            else:
+                request.session["login_error"] = "未激活用户"
+                return render(request, "blog/login.html", {"username": user_name, "password": user_pw})
+        else:
+            request.session["login_error"] = "错误的用户名或密码"
+            return render(request, 'blog/login.html', {"username": user_name, "password": user_pw})
+    else: # such as GET
+        request.session["login_from"] = request.META.get("HTTP_REFERER", "/")
+        request.session["login_error"] = False
+        user = request.user
+        if user.is_authenticated:
+            return redirect(reverse("blog-list"))
+        else:
+            return render(request, "blog/login.html")
+
+
+def do_logout(request):
+    d_logout(request)
+    return redirect(reverse("index"))
+
+
+def page_not_found(request, exception):
+    return render(request, "blog/error.html", {"error_type": "404"})
+
+
+def permission_denied(request, exception):
+    return render(request, "blog/error.html", {"error_type": "403"})
+
+
+def internal_error(request):
+    return render(request, "blog/error.html", {"error_type": "500"})

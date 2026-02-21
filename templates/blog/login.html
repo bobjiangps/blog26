@@ -1,0 +1,61 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <!-- Login Section -->
+    <section class="login-section">
+        <div class="container">
+            <div class="row justify-content-center align-items-center min-vh-80">
+                <div class="col-lg-5 col-md-7">
+                    <div class="login-card">
+                        <div class="text-center mb-4">
+                            <div class="login-icon">
+                                <i class="bi bi-code-slash"></i>
+                            </div>
+                            <h2 class="login-title">欢迎回来!</h2>
+                            <p class="text-muted">请登入你的账号</p>
+                        </div>
+
+                        <form id="loginForm" action="{% url 'do-login' %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="account" class="form-label">
+                                    <i class="bi bi-envelope"></i> 用户名
+                                </label>
+                                <input type="text" class="form-control" id="account" name="user-name" value="{{ username }}"
+                                       placeholder="输入用户名" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="bi bi-lock"></i> 密码
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" name="user-pw" value="{{ password }}"
+                                           placeholder="输入密码" required>
+                                    <button class="btn btn-outline-secondary" type="button"
+                                            onclick="togglePassword(this)">
+                                        <i class="bi bi-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 mb-3">
+                                <i class="bi bi-box-arrow-in-right"></i> Sign In
+                            </button>
+
+                            <div class="divider">
+                                <span>提示</span>
+                            </div>
+                            {% if request.session.login_error %}
+                            <p class="text-center" style="color:red">{{request.session.login_error}}</p>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
