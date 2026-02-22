@@ -97,7 +97,7 @@
                 <h2 class="section-title">
                     <i class="bi bi-fire"></i> 近期阅读最多
                 </h2>
-                <a href="blog-list.html?sort=views-desc" class="link-view-all">
+                <a href="{% url 'blog-list-sort' 'views-desc' %}" class="link-view-all">
                     查看所有 <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
@@ -327,7 +327,7 @@
                 <h2 class="section-title">
                     <i class="bi bi-clock-history"></i> 发布日期最近
                 </h2>
-                <a href="blog-list.html?sort=date-desc" class="link-view-all">
+                <a href="{% url 'blog-list-sort' 'date-desc' %}" class="link-view-all">
                     查看所有 <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
