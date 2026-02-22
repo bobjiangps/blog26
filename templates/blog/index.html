@@ -122,7 +122,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
@@ -181,7 +185,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
@@ -229,7 +237,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
@@ -277,7 +289,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
@@ -336,7 +352,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
@@ -395,7 +415,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
@@ -443,7 +467,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
@@ -491,7 +519,11 @@
                                 </span>
                             </div>
                             <h3 class="blog-title">
+                                {% if post.visible.name == 'private' %}
+                                <a href="{% url 'blog-detail' post.id %}">[private] - {{post.title}}</a>
+                                {% else %}
                                 <a href="{% url 'blog-detail' post.id %}">{{post.title}}</a>
+                                {% endif %}
                             </h3>
                             {% if post.summary %}
                             <p class="blog-summary">
