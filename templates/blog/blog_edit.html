@@ -1,0 +1,451 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <!-- Editor Section -->
+    <section class="editor-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="editor-header">
+                        <h1><i class="bi bi-pencil-square"></i> Create/Edit Blog Post</h1>
+                        <p class="text-muted">Write and publish your technical article</p>
+                    </div>
+
+                    <form id="blogForm" class="editor-form">
+                        {% csrf_token %}
+                        {{ form.media }}
+                        <!-- Title -->
+                        <div class="mb-4">
+                            <label for="blogTitle" class="form-label">
+                                <i class="bi bi-type"></i> Title <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="blogTitle"
+                                   placeholder="Enter your blog post title..." required>
+                        </div>
+
+                        <!-- Category and Tags Row -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="blogCategory" class="form-label">
+                                    <i class="bi bi-folder"></i> Category <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="blogCategory" required>
+                                    <option value="">Select a category...</option>
+                                    <option value="web-development">Web Development</option>
+                                    <option value="mobile">Mobile Development</option>
+                                    <option value="database">Database</option>
+                                    <option value="cloud">Cloud Computing</option>
+                                    <option value="security">Security</option>
+                                    <option value="devops">DevOps</option>
+                                    <option value="ai-ml">AI & Machine Learning</option>
+                                    <option value="performance">Performance</option>
+                                    <option value="testing">Testing</option>
+                                    <option value="architecture">Architecture</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="blogTags" class="form-label">
+                                    <i class="bi bi-tags"></i> Tags <span class="text-muted">(comma-separated)</span>
+                                </label>
+                                <input type="text" class="form-control" id="blogTags"
+                                       placeholder="e.g., Node.js, Docker, Microservices">
+                                <small class="text-muted">Add tags to help readers find your content</small>
+                            </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="mb-4">
+                            <label for="blogSummary" class="form-label">
+                                <i class="bi bi-text-paragraph"></i> Summary
+                            </label>
+                            <textarea class="form-control" id="blogSummary" rows="3"
+                                      placeholder="Write a brief summary of your article (150-200 characters)..."></textarea>
+                            <small class="text-muted">Optional: This will be displayed in the blog list</small>
+                        </div>
+
+                        <!-- Featured Image -->
+                        <div class="mb-4">
+                            <label for="featuredImage" class="form-label">
+                                <i class="bi bi-image"></i> Featured Image URL
+                            </label>
+                            <input type="url" class="form-control" id="featuredImage"
+                                   placeholder="https://example.com/image.jpg">
+                            <small class="text-muted">Optional: Add a cover image for your post</small>
+                        </div>
+
+                        <!-- Rich Text Editor of ckeditor -->
+                        <div class="mb-4">
+                            <label class="form-label mb-3">
+                                <i class="bi bi-file-richtext"></i> Content <span class="text-danger">*</span>
+                            </label>
+                            <div id="editor-ckeditor" class="editor-container">
+                                {% for item in form %}
+                                {{ item }}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Rich Text Editor -->
+                        <div class="mb-4">
+                            <label class="form-label mb-3">
+                                <i class="bi bi-file-richtext"></i> Content <span class="text-danger">*</span>
+                            </label>
+                            <div id="editor" class="editor-container"></div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="button" class="btn btn-outline-secondary" onclick="previewPost()">
+                                    <i class="bi bi-eye"></i> Preview
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
+                                    <i class="bi bi-floppy"></i> Save Draft
+                                </button>
+                                <button type="button" class="btn btn-outline-info" onclick="loadDraft()" id="loadDraftBtn" style="display: none;">
+                                    <i class="bi bi-arrow-clockwise"></i> Load Draft
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-outline-danger me-2" onclick="confirmCancel()">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i> Publish Post
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Writing Tips -->
+                    <div class="writing-tips mt-5">
+                        <h5><i class="bi bi-lightbulb"></i> Writing Tips</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="tip-card">
+                                    <i class="bi bi-bullseye"></i>
+                                    <h6>Be Clear and Concise</h6>
+                                    <p>Use simple language and get to the point quickly</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="tip-card">
+                                    <i class="bi bi-code-square"></i>
+                                    <h6>Include Code Examples</h6>
+                                    <p>Show practical examples with well-commented code</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="tip-card">
+                                    <i class="bi bi-diagram-3"></i>
+                                    <h6>Use Visuals</h6>
+                                    <p>Add diagrams, screenshots, and images to illustrate concepts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-eye"></i> Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <article id="previewContent" class="blog-detail-preview">
+                        <!-- Preview content will be inserted here -->
+                    </article>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Draft Confirmation Modal -->
+    <div class="modal fade" id="loadDraftModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-arrow-clockwise"></i> Load Draft</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>This will replace current content with the saved draft. Do you want to continue?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmLoadDraft()">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle"></i> Confirm Cancel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel?</p>
+                    <p class="text-danger mb-0">You have unsaved changes that will be lost.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Stay</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmCancelAction()">Yes, Leave</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    <script>
+        // Initialize CKEditor
+        let editor;
+        ClassicEditor.create(document.querySelector('#editor'), {
+            toolbar: {
+                items: [
+                    'heading', '|',
+                    'bold', 'italic', 'underline', 'strikethrough', '|',
+                    'link', 'uploadImage', 'blockQuote', 'codeBlock', '|',
+                    'bulletedList', 'numberedList', '|',
+                    'fontSize', 'fontColor', 'fontBackgroundColor', '|',
+                    'alignment', '|',
+                    'indent', 'outdent', '|',
+                    'insertTable', 'mediaEmbed', '|',
+                    'undo', 'redo'
+                ]
+            },
+            placeholder: 'Start writing your article content here... You can use the toolbar above to format text, insert code blocks, add images, and more.',
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                    { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
+                ]
+            }
+        })
+        .then(newEditor => {
+            editor = newEditor;
+            // Set some initial content
+            editor.setData(`
+                <h2>Welcome to the blog editor!</h2>
+                <p>You can write your blog post here. The editor supports:</p>
+                <ul>
+                    <li>Rich text formatting (bold, italic, underline)</li>
+                    <li>Headers and subheaders</li>
+                    <li>Lists (ordered and unordered)</li>
+                    <li>Links and images</li>
+                    <li>Code blocks and tables</li>
+                    <li>And much more!</li>
+                </ul>
+                <p><strong>Start writing below:</strong></p>
+                <p>&nbsp;</p>
+            `);
+        })
+        .catch(error => {
+            console.error('Error initializing CKEditor:', error);
+        });
+
+        // Check if there's a draft on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const draft = localStorage.getItem('blogDraft');
+            if (draft) {
+                document.getElementById('loadDraftBtn').style.display = 'inline-block';
+            }
+        });
+
+        // Save draft function
+        function saveDraft() {
+            if (!editor) {
+                alert('Editor is not ready yet.');
+                return;
+            }
+
+            const draft = {
+                title: document.getElementById('blogTitle').value,
+                category: document.getElementById('blogCategory').value,
+                tags: document.getElementById('blogTags').value,
+                summary: document.getElementById('blogSummary').value,
+                featuredImage: document.getElementById('featuredImage').value,
+                content: editor.getData(),
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('blogDraft', JSON.stringify(draft));
+
+            // Show success notification
+            const btn = event.target.closest('button');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
+            btn.classList.add('btn-success');
+            btn.classList.remove('btn-outline-secondary');
+
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-secondary');
+            }, 2000);
+
+            document.getElementById('loadDraftBtn').style.display = 'inline-block';
+        }
+
+        // Load draft function
+        function loadDraft() {
+            const draftData = localStorage.getItem('blogDraft');
+            if (!draftData) {
+                alert('No draft found.');
+                return;
+            }
+
+            // Show confirmation modal
+            const modal = new bootstrap.Modal(document.getElementById('loadDraftModal'));
+            modal.show();
+        }
+
+        // Confirm load draft action
+        function confirmLoadDraft() {
+            const draftData = localStorage.getItem('blogDraft');
+            const draft = JSON.parse(draftData);
+
+            document.getElementById('blogTitle').value = draft.title || '';
+            document.getElementById('blogCategory').value = draft.category || '';
+            document.getElementById('blogTags').value = draft.tags || '';
+            document.getElementById('blogSummary').value = draft.summary || '';
+            document.getElementById('featuredImage').value = draft.featuredImage || '';
+
+            if (editor && draft.content) {
+                editor.setData(draft.content);
+            }
+
+            // Hide modal
+            bootstrap.Modal.getInstance(document.getElementById('loadDraftModal')).hide();
+
+            // Show notification with saved time
+            const savedDate = new Date(draft.savedAt);
+            const currentTime = new Date();
+            showNotification(`Draft loaded successfully! (Saved: ${savedDate.toLocaleString()})`, 'success');
+        }
+
+        // Confirm cancel function
+        function confirmCancel() {
+            const title = document.getElementById('blogTitle').value;
+            const content = editor ? editor.getData() : '';
+
+            // Check if there's any content
+            if (title || content.trim().length > 100) {
+                // Show confirmation modal
+                const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+                modal.show();
+            } else {
+                // No content, just leave
+                window.location.href = 'blog-list.html';
+            }
+        }
+
+        // Confirm cancel action
+        function confirmCancelAction() {
+            // Hide modal and navigate
+            bootstrap.Modal.getInstance(document.getElementById('cancelModal')).hide();
+            window.location.href = 'blog-list.html';
+        }
+
+        // Preview function
+        function previewPost() {
+            if (!editor) {
+                alert('Editor is not ready yet.');
+                return;
+            }
+
+            const title = document.getElementById('blogTitle').value || 'Untitled Post';
+            const category = document.getElementById('blogCategory').value;
+            const tags = document.getElementById('blogTags').value;
+            const summary = document.getElementById('blogSummary').value || 'No summary provided.';
+            const featuredImage = document.getElementById('featuredImage').value;
+            const content = editor.getData();
+
+            // Get category name
+            const categorySelect = document.getElementById('blogCategory');
+            const categoryName = categorySelect.options[categorySelect.selectedIndex]?.text || category;
+
+            // Format tags
+            const tagsList = tags ? tags.split(',').map(tag =>
+                `<span class="badge bg-secondary me-1">${tag.trim()}</span>`
+            ).join('') : '';
+
+            // Build preview HTML
+            const previewHTML = `
+                <div class="container py-4">
+                    ${featuredImage ? `<img src="${featuredImage}" class="img-fluid rounded mb-4" alt="${title}" style="max-height: 400px; width: 100%; object-fit: cover;">` : ''}
+
+                    <div class="mb-3">
+                        <span class="badge bg-primary">${categoryName}</span>
+                        <span class="text-muted ms-2"><i class="bi bi-clock"></i> ${new Date().toLocaleDateString()}</span>
+                    </div>
+
+                    <h1 class="mb-3">${title}</h1>
+
+                    <div class="lead text-muted mb-4">${summary}</div>
+
+                    ${tagsList ? `<div class="mb-4">${tagsList}</div>` : ''}
+
+                    <hr class="my-4">
+
+                    <div class="blog-content">
+                        ${content}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('previewContent').innerHTML = previewHTML;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            modal.show();
+        }
+
+        // Form submission
+        document.getElementById('blogForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!editor) {
+                alert('Editor is not initialized yet. Please wait a moment.');
+                return;
+            }
+
+            const content = editor.getData();
+            const title = document.getElementById('blogTitle').value;
+            const category = document.getElementById('blogCategory').value;
+            const tags = document.getElementById('blogTags').value;
+            const summary = document.getElementById('blogSummary').value;
+
+            // Get plain text for validation
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            const plainText = tempDiv.textContent || tempDiv.innerText || '';
+
+            // Validate
+            if (!title || !category || plainText.trim().length < 100) {
+                alert('Please fill in required fields:\n- Title\n- Category\n- Content (at least 100 characters)');
+                return;
+            }
+
+            // Simulate save (replace with actual API call)
+            console.log('Saving blog post:', { title, category, tags, summary, content });
+            alert('Blog post published successfully!');
+            window.location.href = 'blog-list.html';
+        });
+    </script>
+{% endblock %}

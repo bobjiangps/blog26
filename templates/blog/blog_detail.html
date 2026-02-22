@@ -27,9 +27,11 @@
                                 {% endfor %}
                             {% endif %}
                             </div>
-                            <a href="blog-edit.html" class="btn btn-sm btn-outline-primary">
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'blog-edit' post.id %}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-pencil"></i> 编辑文章
                             </a>
+                            {% endif %}
                         </div>
                         {% if post.visible.name == 'private' %}
                         <h1 class="article-title">[private] - {{post.title}}</h1>

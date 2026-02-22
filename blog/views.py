@@ -7,11 +7,13 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Sum
 from django.contrib.auth import authenticate, login as d_login, logout as d_logout
 from django.urls import reverse
+from django.contrib.auth.decorators import permission_required, login_required
 from .models import Post, Category, Tag, Comment, ReplyComment
 from pb.settings import BASE_DIR
 from pathlib import Path
 from wsgiref.util import FileWrapper
 import mimetypes
+from .forms import BlogEditor, PostForm
 
 
 def index_articles(request):
@@ -91,6 +93,69 @@ def blog_list_sort(request, sort_type):
         elif sort_type == "views-asc":
             posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("views")
     return pagination(request, posts)
+
+
+@permission_required('blog.change_post', raise_exception=True)
+def blog_edit(request, post_id):
+#     record_visit(request)
+#     post = get_object_or_404(Post, pk=post_id)
+#     if request.method == "POST":
+#         form = PostForm(request.POST, instance=post)
+#         if form.is_valid():
+#             post = form.save(commit=False)
+#             try:
+#                 post.author = request.user
+#             except ValueError:
+#                 # return HttpResponse('<h1>please login first</h1>')
+#                 return render(request, 'error/403.html')
+#             post.save()
+#             form.save_m2m()
+#             return redirect(post_detail, post_id=post.id)
+#     else:
+#         users = [u.username for u in User.objects.all()]
+#         login_user = request.user.username
+#         if login_user not in users:
+#             # return render(request, 'blog/unauthenticated.html')
+#             return render(request, 'error/403.html')
+#         else:
+#             form = PostForm(instance=post)
+#     return render(request, 'blog/post_edit.html', {'form': form})
+    if request.user.is_authenticated:
+        return render(request, "blog/blog_edit.html")
+    else:
+        return render(request, "blog/error.html", {"error_type": "403"})
+
+
+@permission_required('blog.add_post', raise_exception=True)
+def create_new(request):
+    # if request.method == "POST":
+    #     form = PostForm(request.POST)
+    #     if form.is_valid():
+    #         post = form.save(commit=False)
+    #         try:
+    #             post.author = request.user
+    #         except ValueError:
+    #             # return HttpResponse('<h1>please login first</h1>')
+    #             return render(request, 'error/403.html')
+    #         post.published_date = timezone.now()
+    #         post.save()
+    #         form.save_m2m()
+    #         return redirect(post_detail, post_id=post.id)
+    # else:
+    #     users = [u.username for u in User.objects.all()]
+    #     login_user = request.user.username
+    #     if login_user not in users:
+    #         # return render(request, 'blog/unauthenticated.html')
+    #         return render(request, 'error/403.html')
+    #     else:
+    #         form = PostForm()
+    # return render(request, 'blog/create_new.html', {'form': form})
+    if request.user.is_authenticated:
+        form = BlogEditor()
+        # form = PostForm()
+        return render(request, "blog/blog_edit.html", {"form": form})
+    else:
+        return render(request, "blog/error.html", {"error_type": "403"})
 
 
 def archives(request):
