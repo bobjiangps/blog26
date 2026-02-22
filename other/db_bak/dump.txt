@@ -14,3 +14,25 @@ insert into `dj_bobjiang_v3`.blog_post_tag (id, post_id, tag_id)
 select id, post_id, tag_id from `dj-bobjiang-v2`.blog_post_tag;
 
 
+insert into `dj_bobjiang_v3`.accounting_currency
+select * from `dj-bobjiang-v2`.accounting_currency;
+
+
+insert into `dj_bobjiang_v3`.accounting_account
+select * from `dj-bobjiang-v2`.accounting_account;
+
+
+insert into `dj_bobjiang_v3`.accounting_category
+select * from `dj-bobjiang-v2`.accounting_category;
+
+
+insert into `dj_bobjiang_v3`.accounting_subcategory
+select * from `dj-bobjiang-v2`.accounting_subcategory;
+
+
+insert into `dj_bobjiang_v3`.accounting_historyrecord
+select * from `dj-bobjiang-v2`.accounting_historyrecord;
+
+
+insert into `dj_bobjiang_v3`.accounting_transferrecord
+select * from `dj-bobjiang-v2`.accounting_transferrecord;

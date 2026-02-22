@@ -25,10 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('bobjiang/', include('blog.urls')),
-    # path('bobjiang/', include('comments.urls', namespace='comments')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # path('bobjiang/search/', include('haystack.urls')),
-    # path('accounting/', include('accounting.urls')),
+    path('accounting/', include('accounting.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

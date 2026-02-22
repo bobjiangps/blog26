@@ -10,4 +10,5 @@
 - pagination
 - sort in list page
 - reading progress bar not take effect now
+- suddenly cannot comment or reply? get csrf error
 - test
