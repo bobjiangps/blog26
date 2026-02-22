@@ -36,7 +36,11 @@
             <!-- Sort Controls -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="results-info">
-                    <span class="text-muted">展示 <strong>{{posts|length}}</strong> 篇文章 &ensp; 每页 <strong>{{part_posts|length}}</strong> 篇</span>
+                    <span class="text-muted">展示 <strong>{{posts|length}}</strong> 篇文章
+                        {% if device_type != 'mobile' %}
+                        &ensp; 每页 <strong>{{part_posts|length}}</strong> 篇
+                        {% endif %}
+                    </span>
                 </div>
                 <div class="sort-controls">
                     <label for="sortBy" class="me-2 text-muted">排序:</label>
