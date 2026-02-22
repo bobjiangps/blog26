@@ -655,7 +655,7 @@ function increaseCommentRate(button) {
     // Post data
     const urlPath = window.location.pathname;
     const urlPrefix = window.location.href.split(urlPath)[0];
-    fetch(urlPrefix + "/bobjiang/update-comment-rate-" + commentId)
+    fetch(urlPrefix + "/bobjiang/update-comment-rate-" + commentId + "/")
         .then((response) => response.text())
         .then(text => {console.log(text);})
         .catch(err=>{
@@ -678,7 +678,7 @@ function increaseReplyRate(button) {
     // Post data
     const urlPath = window.location.pathname;
     const urlPrefix = window.location.href.split(urlPath)[0];
-    fetch(urlPrefix + "/bobjiang/update-reply-rate-" + replyId)
+    fetch(urlPrefix + "/bobjiang/update-reply-rate-" + replyId + "/")
         .then((response) => response.text())
         .then(text => {console.log(text);})
         .catch(err=>{
