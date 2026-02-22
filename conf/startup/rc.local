@@ -11,9 +11,18 @@
 #
 # By default this script does nothing.
 
-#for uwsgi
-cd /home/bob/djproject/blog26
-source ./venv/bin/activate
-uwsgi -i ./conf/bob_uwsgi.ini
+## /etc/rc.local
+## blog v3 blog26 below
+#!/bin/sh
 
+source /home/bob/djproject/blog26/venv/bin/activate
+nohup /home/bob/djproject/blog26/venv/bin/uwsgi -i /home/bob/djproject/blog26/conf/bob_uwsgi.ini &
 exit 0
+
+## blog v2 bobjiang below
+##!/bin/sh
+
+#source /home/bob/djproject/bobjiang/venv/bin/activate
+#nohup /home/bob/djproject/bobjiang/venv/bin/uwsgi -i /home/bob/djproject/bobjiang/conf/bob_uwsgi.ini &
+##sh /home/test/jupyter/start_jupyter_lab.sh
+#exit 0
