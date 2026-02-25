@@ -7,13 +7,12 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="editor-header">
-                        <h1><i class="bi bi-pencil-square"></i> Create/Edit Blog Post</h1>
+                        <h1><i class="bi bi-pencil-square"></i> {{ entrance }} Blog Post</h1>
                         <p class="text-muted">Write and publish your technical article</p>
                     </div>
 
                     <form id="blogForm" class="editor-form">
                         {% csrf_token %}
-                        {{ form.media }}
                         <!-- Title -->
                         <div class="mb-4">
                             <label for="blogTitle" class="form-label">
@@ -25,31 +24,38 @@
 
                         <!-- Category and Tags Row -->
                         <div class="row mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="blogCategory" class="form-label">
                                     <i class="bi bi-folder"></i> Category <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-select" id="blogCategory" required>
-                                    <option value="">Select a category...</option>
-                                    <option value="web-development">Web Development</option>
-                                    <option value="mobile">Mobile Development</option>
-                                    <option value="database">Database</option>
-                                    <option value="cloud">Cloud Computing</option>
-                                    <option value="security">Security</option>
-                                    <option value="devops">DevOps</option>
-                                    <option value="ai-ml">AI & Machine Learning</option>
-                                    <option value="performance">Performance</option>
-                                    <option value="testing">Testing</option>
-                                    <option value="architecture">Architecture</option>
+                                <select class="form-select" id="blogCategory" multiple required>
+                                    {% for c in category %}
+                                    <option value="{{ c.id }}">{{ c.name }}</option>
+                                    {% endfor %}
                                 </select>
+                                <small class="text-muted">Add categories to help readers find your content</small>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="blogTags" class="form-label">
-                                    <i class="bi bi-tags"></i> Tags <span class="text-muted">(comma-separated)</span>
+                                    <i class="bi bi-tags"></i> Tags <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="blogTags"
-                                       placeholder="e.g., Node.js, Docker, Microservices">
+                                <select class="form-select" id="blogTags" multiple required>
+                                    {% for t in tag %}
+                                    <option value="{{ t.id }}">{{ t.name }}</option>
+                                    {% endfor %}
+                                </select>
                                 <small class="text-muted">Add tags to help readers find your content</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="blogVisible" class="form-label">
+                                    <i class="bi bi-tags"></i> Visible <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="blogVisible" required>
+                                    {% for v in visible %}
+                                    <option value="{{ v.0|add:1 }}">{{ v.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Private blog post will not show to un-authenticated visitor</small>
                             </div>
                         </div>
 
@@ -60,7 +66,7 @@
                             </label>
                             <textarea class="form-control" id="blogSummary" rows="3"
                                       placeholder="Write a brief summary of your article (150-200 characters)..."></textarea>
-                            <small class="text-muted">Optional: This will be displayed in the blog list</small>
+                            <small class="text-muted">Optional: This will be displayed in the blog list, otherwise display part of content instead of summary</small>
                         </div>
 
                         <!-- Featured Image -->
@@ -70,19 +76,7 @@
                             </label>
                             <input type="url" class="form-control" id="featuredImage"
                                    placeholder="https://example.com/image.jpg">
-                            <small class="text-muted">Optional: Add a cover image for your post</small>
-                        </div>
-
-                        <!-- Rich Text Editor of ckeditor -->
-                        <div class="mb-4">
-                            <label class="form-label mb-3">
-                                <i class="bi bi-file-richtext"></i> Content <span class="text-danger">*</span>
-                            </label>
-                            <div id="editor-ckeditor" class="editor-container">
-                                {% for item in form %}
-                                {{ item }}
-                                {% endfor %}
-                            </div>
+                            <small class="text-muted">Optional: Add a cover image for your post, display cover image for blog post later</small>
                         </div>
 
                         <!-- Rich Text Editor -->
@@ -96,9 +90,6 @@
                         <!-- Action Buttons -->
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <button type="button" class="btn btn-outline-secondary" onclick="previewPost()">
-                                    <i class="bi bi-eye"></i> Preview
-                                </button>
                                 <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
                                     <i class="bi bi-floppy"></i> Save Draft
                                 </button>
@@ -111,7 +102,7 @@
                                     <i class="bi bi-x-circle"></i> Cancel
                                 </button>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-send"></i> Publish Post
+                                    <i class="bi bi-send"></i> {{ entrance }} Post
                                 </button>
                             </div>
                         </div>
@@ -148,26 +139,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Preview Modal -->
-    <div class="modal fade" id="previewModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-eye"></i> Preview</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <article id="previewContent" class="blog-detail-preview">
-                        <!-- Preview content will be inserted here -->
-                    </article>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Load Draft Confirmation Modal -->
     <div class="modal fade" id="loadDraftModal" tabindex="-1">
@@ -208,55 +179,85 @@
         </div>
     </div>
 
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'vditor/index.css' %}" />
+    <script src="{% static 'vditor/index.min.js' %}"></script>
     <script>
-        // Initialize CKEditor
+        // Initialize Vditor
         let editor;
-        ClassicEditor.create(document.querySelector('#editor'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', 'strikethrough', '|',
-                    'link', 'uploadImage', 'blockQuote', 'codeBlock', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'fontSize', 'fontColor', 'fontBackgroundColor', '|',
-                    'alignment', '|',
-                    'indent', 'outdent', '|',
-                    'insertTable', 'mediaEmbed', '|',
-                    'undo', 'redo'
-                ]
-            },
+        const urlPath = window.location.pathname;
+        const urlPrefix = window.location.href.split(urlPath)[0];
+        editor = new Vditor('editor', {
+            height: 600,
+            _cdn: "{% static 'vditor' %}",
+            mode: 'ir', // preview mode
             placeholder: 'Start writing your article content here... You can use the toolbar above to format text, insert code blocks, add images, and more.',
-            heading: {
-                options: [
-                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
-                    { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
-                ]
+            theme: 'classic',
+            math: { engine: 'KaTeX' },
+            counter: { enable: true }, // count words and characters
+            preview: {
+                hljs: { style: 'github' } // code highlight style
+            },
+            toolbarConfig: { pin: true },
+            // upload configuration
+            upload: {
+                url: urlPrefix + '/bobjiang/api/vditor/upload/', // backend upload endpoint
+                linkToImgUrl: 'api/vditor/upload/',
+                filename: name => name.replace(/[^(a-zA-Z0-9\.)]/g, ''),
+                format(files, responseText) {
+                    //const response = JSON.parse(responseText);
+                    //// 检查后端是否成功返回
+                    //if (response.code === 0) {
+                    //    // 这里可以拿到 succMap 里的所有 URL
+                    //    console.log('上传成功，succMap 内容：', response.data.succMap);
+                    //    // 如果你想针对第一个上传成功的图片做点什么：
+                    //    const firstFileName = Object.keys(response.data.succMap)[0];
+                    //    const firstImageUrl = response.data.succMap[firstFileName];
+                    //    console.log('获取到的第一个图片 URL:', firstImageUrl);
+                    //} else {
+                    //    console.error('上传后端报错:', response.msg);
+                    //    }
+
+                    // 必须原样返回 responseText（或者符合 Vditor 规范的字符串）这样 Vditor 才会自动在编辑器里插入图片 Markdown
+                    // 注意：如果后端返回的 responseText 不是 Vditor 规范的字符串，可能需要在这里进行转换
+                    return responseText;
+                },
+                // only trigger when network request fails (e.g., 404/500), not when backend returns an error code
+                error(msg) {
+                    console.error('request fail:', msg);
+                }
+            },
+            // toolbar options
+            toolbar: [
+                'emoji', 'headings', 'bold', 'italic', 'strike', 'link', '|',
+                'list', 'ordered-list', 'check', 'outdent', 'indent', '|',
+                'quote', 'line', 'code', 'inline-code', 'insert-before', 'insert-after', '|',
+                'upload', 'table', 'record', '|',
+                'undo', 'redo', '|',
+                'fullscreen', 'edit-mode', 'code-theme', 'content-theme', 'export', '|',
+                'help'
+            ],
+            after: () => {
+                // 编辑器加载完后的回调
+                console.log('Vditor editor initialized successfully');
+                {% if entrance == 'Edit' %}
+                    // 如果是编辑模式，加载现有内容
+                    fetch(urlPrefix + "/bobjiang/api/posts/" + {{post_id}} + "/")
+                        .then((response) => response.json())
+                        .then((json) => {
+                            document.getElementById('blogTitle').value = json['title'];
+                            setSelectValues('blogCategory', json['category']);
+                            setSelectValues('blogTags', json['tag']);
+                            document.getElementById('blogVisible').value = json['visible'];
+                            document.getElementById('blogSummary').value = json['summary'] || '';
+                            document.getElementById('featuredImage').value = json['img_url'] || '';
+                            editor.setValue(editor.html2md(json['content']));
+                        })
+                        .catch(err=>{
+                            console.log(err);
+                        });;
+                {% endif %}
             }
-        })
-        .then(newEditor => {
-            editor = newEditor;
-            // Set some initial content
-            editor.setData(`
-                <h2>Welcome to the blog editor!</h2>
-                <p>You can write your blog post here. The editor supports:</p>
-                <ul>
-                    <li>Rich text formatting (bold, italic, underline)</li>
-                    <li>Headers and subheaders</li>
-                    <li>Lists (ordered and unordered)</li>
-                    <li>Links and images</li>
-                    <li>Code blocks and tables</li>
-                    <li>And much more!</li>
-                </ul>
-                <p><strong>Start writing below:</strong></p>
-                <p>&nbsp;</p>
-            `);
-        })
-        .catch(error => {
-            console.error('Error initializing CKEditor:', error);
         });
 
         // Check if there's a draft on page load
@@ -274,13 +275,19 @@
                 return;
             }
 
+            var categorySelect = document.getElementById('blogCategory');
+            var selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
+            var tagsSelect = document.getElementById('blogTags');
+            var selectedTags = Array.from(tagsSelect.selectedOptions).map(option => option.value);
+
             const draft = {
                 title: document.getElementById('blogTitle').value,
-                category: document.getElementById('blogCategory').value,
-                tags: document.getElementById('blogTags').value,
+                category: selectedCategories,
+                tags: selectedTags,
+                visible: document.getElementById('blogVisible').value,
                 summary: document.getElementById('blogSummary').value,
                 featuredImage: document.getElementById('featuredImage').value,
-                content: editor.getData(),
+                content: editor.getValue(),
                 savedAt: new Date().toISOString()
             };
 
@@ -315,19 +322,39 @@
             modal.show();
         }
 
+        // Select element values setting function
+        function setSelectValues(elementId, valuesToSelect) {
+            const selectElement = document.getElementById(elementId);
+            if (!selectElement) return;
+
+            // 1. 将输入的数组全部转换为字符串（因为 option.value 永远是字符串）
+            const stringValues = valuesToSelect.map(v => String(v));
+
+            // 2. 遍历所有选项并设置选中状态
+            Array.from(selectElement.options).forEach(option => {
+                // 使用 includes 判断当前 option 是否应该被选中
+                option.selected = stringValues.includes(option.value);
+            });
+
+            // 3. 【关键】触发 change 事件
+            // 某些情况下，UI 不会自动刷新，手动触发一下事件可以通知浏览器更新界面
+            const event = new Event('change', { bubbles: true });
+            selectElement.dispatchEvent(event);
+        }
+
         // Confirm load draft action
         function confirmLoadDraft() {
             const draftData = localStorage.getItem('blogDraft');
             const draft = JSON.parse(draftData);
 
             document.getElementById('blogTitle').value = draft.title || '';
-            document.getElementById('blogCategory').value = draft.category || '';
-            document.getElementById('blogTags').value = draft.tags || '';
+            setSelectValues('blogCategory', draft.category);
+            setSelectValues('blogTags', draft.tags);
+            document.getElementById('blogVisible').value = draft.visible || '';
             document.getElementById('blogSummary').value = draft.summary || '';
             document.getElementById('featuredImage').value = draft.featuredImage || '';
-
             if (editor && draft.content) {
-                editor.setData(draft.content);
+                editor.setValue(draft.content);
             }
 
             // Hide modal
@@ -342,16 +369,18 @@
         // Confirm cancel function
         function confirmCancel() {
             const title = document.getElementById('blogTitle').value;
-            const content = editor ? editor.getData() : '';
+            const content = editor ? editor.getValue() : '';
 
             // Check if there's any content
-            if (title || content.trim().length > 100) {
+            if (title || content.trim().length > 10) {
                 // Show confirmation modal
                 const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
                 modal.show();
             } else {
                 // No content, just leave
-                window.location.href = 'blog-list.html';
+                const urlPath = window.location.pathname;
+                const urlPrefix = window.location.href.split(urlPath)[0];
+                window.location.href = urlPrefix + '/bobjiang/';
             }
         }
 
@@ -359,61 +388,9 @@
         function confirmCancelAction() {
             // Hide modal and navigate
             bootstrap.Modal.getInstance(document.getElementById('cancelModal')).hide();
-            window.location.href = 'blog-list.html';
-        }
-
-        // Preview function
-        function previewPost() {
-            if (!editor) {
-                alert('Editor is not ready yet.');
-                return;
-            }
-
-            const title = document.getElementById('blogTitle').value || 'Untitled Post';
-            const category = document.getElementById('blogCategory').value;
-            const tags = document.getElementById('blogTags').value;
-            const summary = document.getElementById('blogSummary').value || 'No summary provided.';
-            const featuredImage = document.getElementById('featuredImage').value;
-            const content = editor.getData();
-
-            // Get category name
-            const categorySelect = document.getElementById('blogCategory');
-            const categoryName = categorySelect.options[categorySelect.selectedIndex]?.text || category;
-
-            // Format tags
-            const tagsList = tags ? tags.split(',').map(tag =>
-                `<span class="badge bg-secondary me-1">${tag.trim()}</span>`
-            ).join('') : '';
-
-            // Build preview HTML
-            const previewHTML = `
-                <div class="container py-4">
-                    ${featuredImage ? `<img src="${featuredImage}" class="img-fluid rounded mb-4" alt="${title}" style="max-height: 400px; width: 100%; object-fit: cover;">` : ''}
-
-                    <div class="mb-3">
-                        <span class="badge bg-primary">${categoryName}</span>
-                        <span class="text-muted ms-2"><i class="bi bi-clock"></i> ${new Date().toLocaleDateString()}</span>
-                    </div>
-
-                    <h1 class="mb-3">${title}</h1>
-
-                    <div class="lead text-muted mb-4">${summary}</div>
-
-                    ${tagsList ? `<div class="mb-4">${tagsList}</div>` : ''}
-
-                    <hr class="my-4">
-
-                    <div class="blog-content">
-                        ${content}
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('previewContent').innerHTML = previewHTML;
-
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-            modal.show();
+            const urlPath = window.location.pathname;
+            const urlPrefix = window.location.href.split(urlPath)[0];
+            window.location.href = urlPrefix + '/bobjiang/';
         }
 
         // Form submission
@@ -425,27 +402,79 @@
                 return;
             }
 
-            const content = editor.getData();
-            const title = document.getElementById('blogTitle').value;
-            const category = document.getElementById('blogCategory').value;
-            const tags = document.getElementById('blogTags').value;
-            const summary = document.getElementById('blogSummary').value;
+            var categorySelect = document.getElementById('blogCategory');
+            var selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
+            var tagsSelect = document.getElementById('blogTags');
+            var selectedTags = Array.from(tagsSelect.selectedOptions).map(option => option.value);
 
-            // Get plain text for validation
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = content;
-            const plainText = tempDiv.textContent || tempDiv.innerText || '';
+            const editData = {
+                title: document.getElementById('blogTitle').value,
+                category: selectedCategories,
+                tags: selectedTags,
+                visible: document.getElementById('blogVisible').value,
+                summary: document.getElementById('blogSummary').value,
+                featuredImage: document.getElementById('featuredImage').value,
+                // content: editor.getValue(),  // getValue means get the markdown source text; get the rendered HTML content, use editor.getHTML() instead
+                content: editor.getHTML(),
+            };
 
-            // Validate
-            if (!title || !category || plainText.trim().length < 100) {
-                alert('Please fill in required fields:\n- Title\n- Category\n- Content (at least 100 characters)');
-                return;
-            }
+            // Post data to api
+            const urlPath = window.location.pathname;
+            const urlPrefix = window.location.href.split(urlPath)[0];
+            var blogPostUrl = urlPrefix + '/bobjiang/api/posts/';
+            {% if entrance == 'Edit' %}
+                blogPostUrl += '{{ post_id }}/';
+            {% endif %}
+            fetch(blogPostUrl,
+            {
+                {% if entrance == 'Edit' %}
+                method: "PUT",
+                {% else %}
+                method: "POST",
+                {% endif %}
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                  title: editData['title'],
+                  category: editData['category'],
+                  tag: editData['tags'],
+                  visible: editData['visible'],
+                  summary: editData['summary'],
+                  img_url: editData['featuredImage'],
+                  content: editData['content']
+                }),
+              })
+                .then((response) => response.json())
+                .then((json) => {
+                    console.log(json);
+                    setTimeout(() => {
+                        showNotification('blog post submitted!', 'success');
+                    }, 400);
 
-            // Simulate save (replace with actual API call)
-            console.log('Saving blog post:', { title, category, tags, summary, content });
-            alert('Blog post published successfully!');
-            window.location.href = 'blog-list.html';
+                    // Save and redirect to article
+                    window.location.href = urlPrefix + '/bobjiang/article-01' + json['id'] + '/';
+                })
+                .catch(err=>{
+                    console.log(err);
+                });;
         });
+
+        // 获取 Cookie 的辅助函数
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 {% endblock %}

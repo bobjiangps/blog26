@@ -1,19 +1,21 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Sum
 from django.contrib.auth import authenticate, login as d_login, logout as d_logout
 from django.urls import reverse
 from django.contrib.auth.decorators import permission_required, login_required
-from .models import Post, Category, Tag, Comment, ReplyComment
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from .models import Post, Category, Tag, Comment, ReplyComment, Visible
 from pb.settings import BASE_DIR
 from pathlib import Path
 from wsgiref.util import FileWrapper
 import mimetypes
-from .forms import BlogEditor, PostForm
+import os
+import datetime
 
 
 def index_articles(request):
@@ -97,63 +99,22 @@ def blog_list_sort(request, sort_type):
 
 @permission_required('blog.change_post', raise_exception=True)
 def blog_edit(request, post_id):
-#     record_visit(request)
-#     post = get_object_or_404(Post, pk=post_id)
-#     if request.method == "POST":
-#         form = PostForm(request.POST, instance=post)
-#         if form.is_valid():
-#             post = form.save(commit=False)
-#             try:
-#                 post.author = request.user
-#             except ValueError:
-#                 # return HttpResponse('<h1>please login first</h1>')
-#                 return render(request, 'error/403.html')
-#             post.save()
-#             form.save_m2m()
-#             return redirect(post_detail, post_id=post.id)
-#     else:
-#         users = [u.username for u in User.objects.all()]
-#         login_user = request.user.username
-#         if login_user not in users:
-#             # return render(request, 'blog/unauthenticated.html')
-#             return render(request, 'error/403.html')
-#         else:
-#             form = PostForm(instance=post)
-#     return render(request, 'blog/post_edit.html', {'form': form})
     if request.user.is_authenticated:
-        return render(request, "blog/blog_edit.html")
+        all_categories = Category.objects.all()
+        all_tags = Tag.objects.all()
+        all_visible = Visible.visible_options
+        return render(request, "blog/blog_edit.html", {"category": all_categories, "tag": all_tags, "visible": all_visible, "entrance": "Edit", "post_id": post_id})
     else:
         return render(request, "blog/error.html", {"error_type": "403"})
 
 
 @permission_required('blog.add_post', raise_exception=True)
 def create_new(request):
-    # if request.method == "POST":
-    #     form = PostForm(request.POST)
-    #     if form.is_valid():
-    #         post = form.save(commit=False)
-    #         try:
-    #             post.author = request.user
-    #         except ValueError:
-    #             # return HttpResponse('<h1>please login first</h1>')
-    #             return render(request, 'error/403.html')
-    #         post.published_date = timezone.now()
-    #         post.save()
-    #         form.save_m2m()
-    #         return redirect(post_detail, post_id=post.id)
-    # else:
-    #     users = [u.username for u in User.objects.all()]
-    #     login_user = request.user.username
-    #     if login_user not in users:
-    #         # return render(request, 'blog/unauthenticated.html')
-    #         return render(request, 'error/403.html')
-    #     else:
-    #         form = PostForm()
-    # return render(request, 'blog/create_new.html', {'form': form})
     if request.user.is_authenticated:
-        form = BlogEditor()
-        # form = PostForm()
-        return render(request, "blog/blog_edit.html", {"form": form})
+        all_categories = Category.objects.all()
+        all_tags = Tag.objects.all()
+        all_visible = Visible.visible_options
+        return render(request, "blog/blog_edit.html", {"category": all_categories, "tag": all_tags, "visible": all_visible, "entrance": "Create"})
     else:
         return render(request, "blog/error.html", {"error_type": "403"})
 
@@ -239,6 +200,48 @@ def update_reply_rate(request, reply_id):
     reply = get_object_or_404(ReplyComment, pk=reply_id)
     reply.increase_rate()
     return HttpResponse("reply rate increased")
+
+
+@csrf_exempt
+@login_required
+def vditor_upload(request):
+    if request.method == "POST" and request.FILES.getlist("file[]"):
+        files = request.FILES.getlist("file[]")
+        # 1. 获取当前用户和日期
+        user_name = request.user.username
+        now = datetime.datetime.now()
+        # 2. 构建路径: upload/bob/2026/02/24/
+        relative_path = os.path.join(
+            "upload",
+            user_name,
+            now.strftime("%Y"),
+            now.strftime("%m"),
+            now.strftime("%d")
+        )
+        succ_map = {}
+        err_files = []
+
+        for file in files:
+            try:
+                # 3. 拼接完整的文件存储路径
+                full_save_path = os.path.join(relative_path, file.name)
+                # 保存文件
+                filename = default_storage.save(full_save_path, file)
+                # 获取可访问的 URL
+                file_url = default_storage.url(filename)
+                succ_map[file.name] = file_url
+            except Exception as e:
+                err_files.append(file.name)
+
+        return JsonResponse({
+            "msg": "Success",
+            "code": 0,
+            "data": {
+                "errFiles": err_files,
+                "succMap": succ_map
+            }
+        })
+    return JsonResponse({"code": 1, "msg": "上传失败"})
 
 
 def do_login(request):

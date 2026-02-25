@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from ckeditor_uploader.fields import RichTextUploadingField
+# from ckeditor_uploader.fields import RichTextUploadingField
 
 
 class Category(models.Model):
@@ -32,7 +32,8 @@ class Post(models.Model):
     tag = models.ManyToManyField(Tag)
     summary = models.CharField(max_length=1000, blank=True, null=True)
     img_url = models.URLField(max_length=200, blank=True, null=True)
-    content = RichTextUploadingField()
+    # content = RichTextUploadingField()  # 之前的用ckeditor，现在改成普通的TextField，前端用vditor编辑器
+    content = models.TextField(verbose_name="文章正文")
     visible = models.ForeignKey(Visible, on_delete=models.DO_NOTHING)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(blank=True, null=True)

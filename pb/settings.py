@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     'main',
     'blog',
     'accounting',
-    'ckeditor',
-    'ckeditor_uploader',
+    # 'ckeditor',
+    # 'ckeditor_uploader',
     # 'haystack',
     'corsheaders',
     'rest_framework',
@@ -147,18 +147,37 @@ STATICFILES_DIRS = [
 ]
 MEDIA_ROOT = Path.cwd().joinpath("media").as_posix()
 MEDIA_URL = '/media/'
-CKEDITOR_UPLOAD_PATH = 'upload/'
-CKEDITOR_IMAGE_BACKEND = 'pillow'
-CKEDITOR_BROWSE_SHOW_DIRS = True
-CKEDITOR_RESTRICT_BY_USER = True
+# CKEDITOR_UPLOAD_PATH = 'upload/'
+# CKEDITOR_IMAGE_BACKEND = 'pillow'
+# CKEDITOR_BROWSE_SHOW_DIRS = True
+# CKEDITOR_RESTRICT_BY_USER = True
+#
+# CKEDITOR_CONFIGS = {
+#     'default': {
+#         'toolbar': 'full',
+#         'extraPlugins': 'codesnippet',
+#     },
+# }
+#
+# SILENCED_SYSTEM_CHECKS = [
+#     "ckeditor.W001", # CKEditor 4.22.1 warning
+# ]
 
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'extraPlugins': 'codesnippet',
-    },
+CORS_ORIGIN_ALLOW_ALL = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.DjangoModelPermissions',
+        # 'utils.permission.DjangoModelPermissionsWithRead',
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        # 'utils.authentication.ExpiringTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'SEARCH_PARAM': 's'
 }
-
-SILENCED_SYSTEM_CHECKS = [
-    "ckeditor.W001", # CKEditor 4.22.1 warning
-]

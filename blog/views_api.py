@@ -1,6 +1,7 @@
 from .models import Post, Comment, ReplyComment
 from .serializers import PostSerializer, CommentSerializer, ReplySerializer, CommentUpdateSerializer, ReplyUpdateSerializer
 from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
@@ -19,8 +20,26 @@ class PostViewSet(viewsets.ModelViewSet):
         queryset = Post.objects.filter(Q(visible__name="public") | Q(author=self.request.user.id)).order_by("-published_date")
         return queryset
 
+    def perform_create(self, serializer):
+        # 创建时手动注入作者，且不设置 updated_date
+        serializer.save(author=self.request.user, published_date=timezone.now())
+
+    def perform_update(self, serializer):
+        # 更新时自动设置当前时间为更新时间
+        serializer.save(updated_date=timezone.now())
+
+    def update(self, request, *args, **kwargs):
+        # 只允许作者本人修改自己的文章
+        instance = self.get_object()
+        if instance.author != request.user:
+            return Response(
+                {"detail": "Not allowed to edit others' posts"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+
     def destroy(self, request, *args, **kwargs):
-        return Response({"message": "delete action is not allowed", "code": "200"}, status=status.HTTP_200_OK)
+        return Response({"message": "delete action is not allowed, contact administrator"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 # class CommentViewSet(mixins.CreateModelMixin,
