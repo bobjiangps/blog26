@@ -18,8 +18,8 @@
 
                         <!-- Search Bar -->
                         <div class="search-container mb-4">
-                            <form class="search-form d-flex" onsubmit="return handleSearch(this)">
-                                <input type="search" class="form-control form-control-lg me-2" placeholder="输入关键词..." aria-label="Search">
+                            <form class="search-form d-flex" method="get" action="{% url 'search-view' %}">
+                                <input type="search" name="q" class="form-control form-control-lg me-2" placeholder="输入关键词..." aria-label="Search">
                                 <button class="btn btn-primary btn-lg" type="submit">
                                     <i class="bi bi-search"></i> 搜索
                                 </button>

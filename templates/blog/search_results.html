@@ -33,29 +33,17 @@
     <!-- Blog List -->
     <section class="blog-list-section">
         <div class="container">
-            <!-- Sort Controls -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="results-info">
-                    <span class="text-muted">展示 <strong>{{posts|length}}</strong> 篇文章
-                        {% if device_type != 'mobile' %}
-                        &ensp; 每页 <strong>{{part_posts|length}}</strong> 篇
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="sort-controls">
-                    <label for="sortBy" class="me-2 text-muted">排序:</label>
-                    <select id="sortBy" class="form-select form-select-sm d-inline-block" style="width: 160px;" onchange="handleSort(this.value)">
-                        <option value="date-desc" selected>发布最近</option>
-                        <option value="date-asc">发布最久</option>
-                        <option value="views-desc">阅读最多</option>
-                        <option value="views-asc">阅读最少</option>
-                    </select>
+                    <span class="text-muted">搜索 <strong>{{query}}</strong> 的结果</span>
+                    <span class="text-muted">展示 <strong>{{posts|length}}</strong> 篇文章</span>
                 </div>
             </div>
 
             {% load replace_html_tags %}
             <div class="row g-4">
                 <!-- Blog Post 1 -->
+                {% if part_posts|length > 0 %}
                 <div class="col-12">
                     <article class="blog-list-card">
                         <div class="row g-0">
@@ -122,6 +110,13 @@
                         </div>
                     </article>
                 </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="alert alert-warning text-center" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> 没有找到包含 "{{ query }}" 的文章
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Blog Post 2 -->
                 {% if part_posts|length > 1 %}
@@ -405,7 +400,7 @@
                 <ul class="pagination justify-content-center">
                     {% if part_posts.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ part_posts.previous_page_number }}" tabindex="-1">
+                        <a class="page-link" href="?q={{url_search_string}}&page={{ part_posts.previous_page_number }}" tabindex="-1">
                     {% else %}
                     <li class="page-item disabled">
                         <a class="page-link" href="#" tabindex="-1">
@@ -416,7 +411,7 @@
                     <li class="page-item"><a class="page-link">{{ part_posts.number }} / {{ part_posts.paginator.num_pages }}</a></li>
                     {% if part_posts.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ part_posts.next_page_number }}">
+                        <a class="page-link" href="?q={{url_search_string}}&page={{ part_posts.next_page_number }}">
                     {% else %}
                     <li class="page-item disabled">
                         <a class="page-link" href="#">
@@ -425,34 +420,29 @@
                         </a>
                     </li>
                     <input class="form-control form-control-sm" id="page-number-input" style="width:4rem;">
-                    <button class="btn btn-outline-secondary btn-sm" id="page-jump" onclick="window.location.href='?page='+document.getElementById('page-number-input').value">跳转</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="page-jump" onclick="window.location.href='?q={{url_search_string}}&page='+document.getElementById('page-number-input').value">跳转</button>
                 </ul>
             </nav>
         </div>
     </section>
 
-    <script type="text/javascript">
-        if (window.location.href.indexOf("categorization") >= 0) {
-            var targetNode = document.getElementById('sortBy');
-            var parentNode = targetNode.parentNode;
-            targetNode.remove();
-            parentNode.querySelector('label').textContent = '按阅读最多排序';
-        }
+    {% load static %}
+    <script src="{% static '3rd/mark-8_11_1.min.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const keywords = {{ words|safe }};
 
-        if (window.location.href.indexOf("sort-by-date-desc") >= 0) {
-            document.querySelector('#sortBy').value = 'date-desc';
-        }
-        else if (window.location.href.indexOf("sort-by-date-asc") >= 0) {
-            document.querySelector('#sortBy').value = 'date-asc';
-        }
-        else if (window.location.href.indexOf("sort-by-views-desc") >= 0) {
-            document.querySelector('#sortBy').value = 'views-desc';
-        }
-        else if (window.location.href.indexOf("sort-by-views-asc") >= 0) {
-            document.querySelector('#sortBy').value = 'views-asc';
-        }
-        else {
-            document.querySelector('#sortBy').value = 'date-desc';
-        }
+            if (keywords && keywords.length > 0) {
+                const context = document.querySelector(".blog-list-section .row");
+                const instance = new Mark(context);
+
+                // Mark.js 会自动遍历数组中的每个词进行高亮
+                instance.mark(keywords, {
+                    "element": "span",
+                    "className": "bg-warning text-dark px-1 rounded",
+                    "separateWordSearch": false // 因为我们已经在后端分好词了
+                });
+            }
+        });
     </script>
 {% endblock %}

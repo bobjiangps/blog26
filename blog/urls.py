@@ -16,6 +16,7 @@ urlpatterns = [
     path('categorization/<int:year>/<int:month>/', views.archives_date, name='archives-date'),
     path('categorization/category/<str:category_name>/', views.archives_category, name='archives-category'),
     path('categorization/tag/<str:tag_name>/', views.archives_tag, name='archives-tag'),
+    path('search/', views.search_view, name='search-view'),
     path('login/', views.do_login, name='do-login'),
     path('logout/', views.do_logout, name='do-logout'),
     path('api/posts/', views_api.PostViewSet.as_view({'get': 'list', 'post': 'create'}), name='posts-api'),

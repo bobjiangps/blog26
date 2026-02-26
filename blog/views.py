@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import permission_required, login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
+from django.db.models import Q
 from .models import Post, Category, Tag, Comment, ReplyComment, Visible
 from pb.settings import BASE_DIR
 from pathlib import Path
@@ -16,12 +17,16 @@ from wsgiref.util import FileWrapper
 import mimetypes
 import os
 import datetime
+import jieba
 
 
 def index_articles(request):
     amount = 5
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
+    # 将来考虑使用filter(Q(visible__name="public") | Q(author=request.user.id))
+    # 并设定多用户的级别和权限，目前先简单区分登录用户和未登录用户
+    # 对于多用户来说，各自只能看到自己的私密文章和所有人的公开文章，管理员可以看到所有文章
     if login_user not in users:
         new_posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("-published_date")
     else:
@@ -51,6 +56,9 @@ def blog_detail(request, post_id):
 def blog_list(request):
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
+    # 将来考虑使用filter(Q(visible__name="public") | Q(author=request.user.id))
+    # 并设定多用户的级别和权限，目前先简单区分登录用户和未登录用户
+    # 对于多用户来说，各自只能看到自己的私密文章和所有人的公开文章，管理员可以看到所有文章
     if login_user not in users:
         posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by("published_date").reverse()
     else:
@@ -75,6 +83,9 @@ def pagination(request, filter_posts):
 def blog_list_sort(request, sort_type):
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
+    # 将来考虑使用filter(Q(visible__name="public") | Q(author=request.user.id))
+    # 并设定多用户的级别和权限，目前先简单区分登录用户和未登录用户
+    # 对于多用户来说，各自只能看到自己的私密文章和所有人的公开文章，管理员可以看到所有文章
     posts = Post.objects.filter(published_date__lte=timezone.now()).filter(visible__name="public").order_by('published_date').reverse()
     if login_user not in users:
         if sort_type == "date-desc":
@@ -124,6 +135,9 @@ def archives(request):
     all_tag = []
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
+    # 将来考虑使用filter(Q(visible__name="public") | Q(author=request.user.id))
+    # 并设定多用户的级别和权限，目前先简单区分登录用户和未登录用户
+    # 对于多用户来说，各自只能看到自己的私密文章和所有人的公开文章，管理员可以看到所有文章
     if login_user not in users:
         date_list = Post.objects.filter(visible__name="public").dates("published_date", "month", order="DESC")
         category_by_post_view = Category.objects.annotate(blog_views=Count("post__views")).filter(post__visible__name="public").order_by("-blog_views")
@@ -146,6 +160,9 @@ def archives(request):
 def archives_date(request, year, month):
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
+    # 将来考虑使用filter(Q(visible__name="public") | Q(author=request.user.id))
+    # 并设定多用户的级别和权限，目前先简单区分登录用户和未登录用户
+    # 对于多用户来说，各自只能看到自己的私密文章和所有人的公开文章，管理员可以看到所有文章
     if login_user not in users:
         posts = Post.objects.filter(visible__name="public").filter(published_date__year=year, published_date__month=month).order_by("views").reverse()
     else:
@@ -156,6 +173,9 @@ def archives_date(request, year, month):
 def archives_category(request, category_name):
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
+    # 将来考虑使用filter(Q(visible__name="public") | Q(author=request.user.id))
+    # 并设定多用户的级别和权限，目前先简单区分登录用户和未登录用户
+    # 对于多用户来说，各自只能看到自己的私密文章和所有人的公开文章，管理员可以看到所有文章
     if login_user not in users:
         posts = Post.objects.filter(visible__name="public").filter(published_date__lte=timezone.now()).filter(category__name=category_name).order_by("views").reverse()
     else:
@@ -166,6 +186,9 @@ def archives_category(request, category_name):
 def archives_tag(request, tag_name):
     users = [u.username for u in User.objects.all()]
     login_user = request.user.username
+    # 将来考虑使用filter(Q(visible__name="public") | Q(author=request.user.id))
+    # 并设定多用户的级别和权限，目前先简单区分登录用户和未登录用户
+    # 对于多用户来说，各自只能看到自己的私密文章和所有人的公开文章，管理员可以看到所有文章
     if login_user not in users:
         posts = Post.objects.filter(visible__name="public").filter(published_date__lte=timezone.now()).filter(tag__name=tag_name).order_by("views").reverse()
     else:
@@ -284,3 +307,43 @@ def permission_denied(request, exception):
 
 def internal_error(request):
     return render(request, "blog/error.html", {"error_type": "500"})
+
+
+def search_view(request):
+    query = request.GET.get("q", "").strip()
+    results = Post.objects.filter(Q(visible__name="public") | Q(author=request.user.id))
+
+    if query:
+        cut_words = list(jieba.cut_for_search(query))
+        words = [w for w in cut_words if w.strip()]
+
+        q_objects = Q()
+        for word in words:
+            term_q = Q(title__icontains=word) | \
+                     Q(summary__icontains=word) | \
+                     Q(content__icontains=word)
+            q_objects &= term_q
+
+        results = results.filter(q_objects).distinct().order_by("-published_date")
+    else:
+        return redirect(reverse("blog-list"))
+
+    # pagination for search results
+    paginator = Paginator(results, 5)
+    page = request.GET.get("page", 1)
+    try:
+        part_posts = paginator.page(page)
+    except PageNotAnInteger:
+        # if page is not an integer, deliver first page.
+        part_posts = paginator.page(1)
+    except EmptyPage:
+        # if page is out of range, deliver last page of results
+        part_posts = paginator.page(paginator.num_pages)
+
+    return render(request, "blog/search_results.html", {
+        "posts": results,
+        "part_posts": part_posts,
+        "query": query,
+        "words": words,
+        "url_search_string": "+".join(words)
+    })
