@@ -346,5 +346,5 @@ def search_view(request):
         "part_posts": part_posts,
         "query": query,
         "words": words,
-        "url_search_string": urllib.parse.quote("+".join(words))
+        "url_search_string": request.build_absolute_uri().split("&page")[0]
     })

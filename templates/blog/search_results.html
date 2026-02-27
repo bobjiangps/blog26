@@ -400,7 +400,7 @@
                 <ul class="pagination justify-content-center">
                     {% if part_posts.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?q={{url_search_string}}&page={{ part_posts.previous_page_number }}" tabindex="-1">
+                        <a class="page-link" href="{{url_search_string}}&page={{ part_posts.previous_page_number }}" tabindex="-1">
                     {% else %}
                     <li class="page-item disabled">
                         <a class="page-link" href="#" tabindex="-1">
@@ -411,7 +411,7 @@
                     <li class="page-item"><a class="page-link">{{ part_posts.number }} / {{ part_posts.paginator.num_pages }}</a></li>
                     {% if part_posts.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?q={{url_search_string}}&page={{ part_posts.next_page_number }}">
+                        <a class="page-link" href="{{url_search_string}}&page={{ part_posts.next_page_number }}">
                     {% else %}
                     <li class="page-item disabled">
                         <a class="page-link" href="#">
@@ -420,7 +420,7 @@
                         </a>
                     </li>
                     <input class="form-control form-control-sm" id="page-number-input" style="width:4rem;">
-                    <button class="btn btn-outline-secondary btn-sm" id="page-jump" onclick="window.location.href='?q={{url_search_string}}&page='+document.getElementById('page-number-input').value">跳转</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="page-jump" onclick="window.location.href='{{url_search_string}}&page='+document.getElementById('page-number-input').value">跳转</button>
                 </ul>
             </nav>
         </div>
