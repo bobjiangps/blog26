@@ -11,6 +11,24 @@ document.addEventListener('DOMContentLoaded', function() {
     initNavbarScroll();
     initTooltips();
     handleURLParams();
+
+    // Initialize reading progress on article pages
+    if (document.querySelector('.article-content')) {
+        console.log("---init reading progress---");
+        initReadingProgress();
+    }
+
+    // Initialize syntax highlighting on page load
+    if (document.querySelector('.code-block')) {
+        console.log("---init syntax highlighting---");
+        initSyntaxHighlighting();
+    }
+
+    // Initialize lazy loading
+    if (document.querySelector('img[data-src]')) {
+        console.log("---init lazy loading---");
+        initLazyLoading();
+    }
 });
 
 /**
@@ -514,20 +532,6 @@ function initReadingProgress() {
     });
 }
 
-// Initialize reading progress on article pages
-if (document.querySelector('.article-content')) {
-    initReadingProgress();
-}
-
-// Initialize syntax highlighting on page load
-if (document.querySelector('.code-block')) {
-    initSyntaxHighlighting();
-}
-
-// Initialize lazy loading
-if (document.querySelector('img[data-src]')) {
-    initLazyLoading();
-}
 
 // Export functions for inline usage
 window.toggleLike = toggleLike;

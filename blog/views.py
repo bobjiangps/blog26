@@ -18,6 +18,7 @@ import mimetypes
 import os
 import datetime
 import jieba
+import urllib.parse
 
 
 def index_articles(request):
@@ -345,5 +346,5 @@ def search_view(request):
         "part_posts": part_posts,
         "query": query,
         "words": words,
-        "url_search_string": "+".join(words)
+        "url_search_string": urllib.parse.quote("+".join(words))
     })
