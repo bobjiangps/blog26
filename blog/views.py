@@ -299,15 +299,15 @@ def do_logout(request):
 
 
 def page_not_found(request, exception):
-    return render(request, "blog/error.html", {"error_type": "404"})
+    return render(request, "blog/error.html", {"error_type": "404"}, status=404)
 
 
 def permission_denied(request, exception):
-    return render(request, "blog/error.html", {"error_type": "403"})
+    return render(request, "blog/error.html", {"error_type": "403"}, status=403)
 
 
 def internal_error(request):
-    return render(request, "blog/error.html", {"error_type": "500"})
+    return render(request, "blog/error.html", {"error_type": "500"}, status=500)
 
 
 def search_view(request):
