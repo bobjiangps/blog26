@@ -380,7 +380,11 @@
                 // No content, just leave
                 const urlPath = window.location.pathname;
                 const urlPrefix = window.location.href.split(urlPath)[0];
+                {% if post_id %}
                 window.location.href = urlPrefix + '/bobjiang/article-01{{post_id}}/';
+                {% else %}
+                window.location.href = urlPrefix + '/bobjiang/';
+                {% endif %}
             }
         }
 
@@ -390,7 +394,11 @@
             bootstrap.Modal.getInstance(document.getElementById('cancelModal')).hide();
             const urlPath = window.location.pathname;
             const urlPrefix = window.location.href.split(urlPath)[0];
+            {% if post_id %}
             window.location.href = urlPrefix + '/bobjiang/article-01{{post_id}}/';
+            {% else %}
+            window.location.href = urlPrefix + '/bobjiang/';
+            {% endif %}
         }
 
         // Form submission
