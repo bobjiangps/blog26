@@ -33,7 +33,7 @@ def index_articles(request):
     else:
         new_posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("-published_date")
     # for the posts which set to top
-    top_posts = Post.objects.filter(id__in=[104, 255, 180, 263, 282]).order_by("views").reverse()
+    top_posts = Post.objects.filter(id__in=[104, 227, 180, 263, 282]).order_by("views").reverse()
     extra_info = { "article_amount": Post.objects.count(), "category_amount": Category.objects.count()}
     return render(request, "blog/index.html", {"top_posts": top_posts[:amount], "new_posts": new_posts[:amount], "info": extra_info})
 

@@ -202,6 +202,7 @@
             // upload configuration
             upload: {
                 url: urlPrefix + '/bobjiang/api/vditor/upload/', // backend upload endpoint
+                max: 100 * 1024 * 1024, // 100M upload
                 linkToImgUrl: 'api/vditor/upload/',
                 filename: name => name.replace(/[^(a-zA-Z0-9\.)]/g, ''),
                 format(files, responseText) {
