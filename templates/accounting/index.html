@@ -90,7 +90,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <input type="text" oninput="value=value.replace(/[^\d.]/g,'')" name="amount" aria-label="Transfer Money Amount" placeholder="金额" class="form-control" required="">
+                                    <!-- <input type="text" oninput="value=value.replace(/[^\d.]/g,'')" name="amount" aria-label="Transfer Money Amount" placeholder="金额" class="form-control" required=""> -->
+                                    <input type="number" name="amount" aria-label="Transfer Money Amount" placeholder="金额" class="form-control" step="0.01" min="0" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <input type="text" name="comment" aria-label="Comment" placeholder="备注" class="form-control">
@@ -166,7 +167,8 @@
                                             {% endfor %}
                                             </select>
                                         </div>
-                                        <input type="text" oninput="value=value.replace(/[^\d.]/g,'')" name="amount" aria-label="Money Amount" placeholder="金额" class="form-control" required="">
+                                        <!-- <input type="text" oninput="value=value.replace(/[^\d.]/g,'')" name="amount" aria-label="Money Amount" placeholder="金额" class="form-control" required=""> -->
+                                        <input type="number" name="amount" aria-label="Money Amount" placeholder="金额" class="form-control" step="0.01" min="-999999" required>
                                     </div>
                                 </div>
                                 <div class="col-md-7 mb-3">
