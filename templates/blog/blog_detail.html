@@ -1,5 +1,7 @@
 {% extends 'blog/base.html' %}
 
+{% block title %}{{ post.title }} - Bob Blog{% endblock %}
+
 {% block content %}
     <!-- Article Header -->
     <article class="blog-detail">
@@ -72,7 +74,7 @@
                             <h5><i class="bi bi-tags"></i> 标签:</h5>
                             <div class="tags-list">
                                 {% for t in post.tag.all %}
-                                <a href="categories.html" class="tag">{{t.name}}</a>
+                                <a href="{% url 'archives-tag' t.name %}" class="tag">{{t.name}}</a>
                                 {% endfor %}
                             </div>
                         </div>
