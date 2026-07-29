@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Sum
+from django.contrib import messages
 from django.contrib.auth import authenticate, login as d_login, logout as d_logout
 from django.urls import reverse
 from django.contrib.auth.decorators import permission_required, login_required
@@ -414,15 +415,17 @@ def file_upload(request):
 
     uploaded_files = request.FILES.getlist("files")
     if not uploaded_files:
+        messages.warning(request, "请选择要上传的文件")
         return redirect(f"{reverse('file-manager')}?path={urllib.parse.quote(rel_path)}")
 
     for f in uploaded_files:
-        safe_name = Path(f.name).name  # 防止文件名中含路径分隔符
+        safe_name = Path(f.name).name
         dest = target_dir / safe_name
         with open(dest, "wb") as out:
             for chunk in f.chunks():
                 out.write(chunk)
 
+    messages.success(request, f"成功上传 {len(uploaded_files)} 个文件")
     return redirect(f"{reverse('file-manager')}?path={urllib.parse.quote(rel_path)}")
 
 
