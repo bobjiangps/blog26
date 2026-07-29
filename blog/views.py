@@ -288,7 +288,8 @@ def do_login(request):
             request.session["login_error"] = "错误的用户名或密码"
             return render(request, 'blog/login.html', {"username": user_name, "password": user_pw})
     else: # such as GET
-        request.session["login_from"] = request.META.get("HTTP_REFERER", "/")
+        next_url = request.GET.get("next") or request.META.get("HTTP_REFERER") or "/"
+        request.session["login_from"] = next_url
         request.session["login_error"] = False
         user = request.user
         if user.is_authenticated:
