@@ -97,8 +97,11 @@
                         <li class="list-inline-item">&sdot;</li>
                         <li class="list-inline-item"><a href="/it-tools/">在线工具</a></li>
                         <li class="list-inline-item">&sdot;</li>
-                        {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
                         <li class="list-inline-item"><a href="{% url 'download-bak' %}">备份下载</a></li>
+                        <li class="list-inline-item">&sdot;</li>
+                        <li class="list-inline-item"><a href="{% url 'file-manager' %}">文件管理</a></li>
+                        <li class="list-inline-item">&sdot;</li>
                         {% endif %}
                     </ul>
                     <p class="footer-description">By &copy; BobJiang</p>

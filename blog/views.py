@@ -301,6 +301,131 @@ def do_logout(request):
     return redirect(reverse("index"))
 
 
+def _safe_resolve(base_dir: Path, rel_path: str) -> Path | None:
+    """解析路径并确保不越过 base_dir，返回 None 表示非法路径"""
+    try:
+        target = (base_dir / rel_path).resolve()
+        base_resolved = base_dir.resolve()
+        if target == base_resolved or str(target).startswith(str(base_resolved) + os.sep):
+            return target
+        return None
+    except Exception:
+        return None
+
+
+@login_required
+def file_manager(request):
+    if not request.user.is_superuser:
+        return render(request, "blog/error.html", {"error_type": "403"})
+
+    base_dir = Path(BASE_DIR).resolve()
+    rel_path = request.GET.get("path", "").strip("/")
+
+    if rel_path:
+        current_dir = _safe_resolve(base_dir, rel_path)
+    else:
+        current_dir = base_dir
+
+    if current_dir is None or not current_dir.exists() or not current_dir.is_dir():
+        return render(request, "blog/error.html", {"error_type": "404"})
+
+    # 构建面包屑导航
+    try:
+        relative = current_dir.relative_to(base_dir)
+        parts = list(relative.parts)
+    except ValueError:
+        parts = []
+
+    breadcrumbs = [{"name": "根目录", "path": ""}]
+    accumulated = ""
+    for part in parts:
+        accumulated = (accumulated + "/" + part).lstrip("/")
+        breadcrumbs.append({"name": part, "path": accumulated})
+
+    # 列出目录内容
+    dirs = []
+    files = []
+    for item in sorted(current_dir.iterdir()):
+        try:
+            rel = item.relative_to(base_dir).as_posix()
+        except ValueError:
+            continue
+        if item.is_dir():
+            dirs.append({"name": item.name, "path": rel})
+        elif item.is_file():
+            size = item.stat().st_size
+            files.append({"name": item.name, "path": rel, "size": size})
+
+    current_path = current_dir.relative_to(base_dir).as_posix() if current_dir != base_dir else ""
+
+    return render(request, "blog/file_manager.html", {
+        "breadcrumbs": breadcrumbs,
+        "dirs": dirs,
+        "files": files,
+        "current_path": current_path,
+    })
+
+
+@login_required
+def file_download(request):
+    if not request.user.is_superuser:
+        return render(request, "blog/error.html", {"error_type": "403"})
+
+    rel_path = request.GET.get("path", "").strip("/")
+    if not rel_path:
+        return HttpResponse("<h1>未指定文件</h1>", status=400)
+
+    base_dir = Path(BASE_DIR).resolve()
+    target = _safe_resolve(base_dir, rel_path)
+
+    if target is None or not target.exists() or not target.is_file():
+        return HttpResponse("<h1>文件不存在</h1>", status=404)
+
+    chunk_size = 8192
+    content_type = mimetypes.guess_type(target)[0] or "application/octet-stream"
+    response = StreamingHttpResponse(
+        FileWrapper(open(target.as_posix(), "rb"), chunk_size),
+        content_type=content_type,
+    )
+    response["Content-Length"] = target.stat().st_size
+    encoded_name = urllib.parse.quote(target.name)
+    response["Content-Disposition"] = f"attachment; filename*=UTF-8''{encoded_name}"
+    return response
+
+
+@login_required
+def file_upload(request):
+    if not request.user.is_superuser:
+        return render(request, "blog/error.html", {"error_type": "403"})
+
+    if request.method != "POST":
+        return redirect(reverse("file-manager"))
+
+    rel_path = request.POST.get("path", "").strip("/")
+    base_dir = Path(BASE_DIR).resolve()
+
+    if rel_path:
+        target_dir = _safe_resolve(base_dir, rel_path)
+    else:
+        target_dir = base_dir
+
+    if target_dir is None or not target_dir.exists() or not target_dir.is_dir():
+        return HttpResponse("<h1>目标目录不存在</h1>", status=404)
+
+    uploaded_files = request.FILES.getlist("files")
+    if not uploaded_files:
+        return redirect(f"{reverse('file-manager')}?path={urllib.parse.quote(rel_path)}")
+
+    for f in uploaded_files:
+        safe_name = Path(f.name).name  # 防止文件名中含路径分隔符
+        dest = target_dir / safe_name
+        with open(dest, "wb") as out:
+            for chunk in f.chunks():
+                out.write(chunk)
+
+    return redirect(f"{reverse('file-manager')}?path={urllib.parse.quote(rel_path)}")
+
+
 def page_not_found(request, exception):
     return render(request, "blog/error.html", {"error_type": "404"}, status=404)
 

@@ -1,0 +1,108 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}文件管理 - Bob Blog{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-3"><i class="bi bi-folder2-open"></i> 文件管理</h2>
+
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            {% for crumb in breadcrumbs %}
+                {% if forloop.last %}
+                    <li class="breadcrumb-item active">{{ crumb.name }}</li>
+                {% else %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'file-manager' %}?path={{ crumb.path }}">{{ crumb.name }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </nav>
+
+    <!-- 上传区域 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-cloud-upload"></i> 上传文件到当前目录
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'file-upload' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="path" value="{{ current_path }}">
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <input type="file" name="files" multiple class="form-control" style="max-width: 400px;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> 上传
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 目录列表 -->
+    {% if dirs or files %}
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-list-ul"></i> 目录内容
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>名称</th>
+                        <th>类型</th>
+                        <th>大小</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in dirs %}
+                    <tr>
+                        <td>
+                            <i class="bi bi-folder-fill text-warning"></i>
+                            <a href="{% url 'file-manager' %}?path={{ d.path }}">{{ d.name }}</a>
+                        </td>
+                        <td><span class="badge bg-secondary">目录</span></td>
+                        <td>—</td>
+                        <td>
+                            <a href="{% url 'file-manager' %}?path={{ d.path }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-folder2-open"></i> 打开
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% for f in files %}
+                    <tr>
+                        <td>
+                            <i class="bi bi-file-earmark text-muted"></i>
+                            {{ f.name }}
+                        </td>
+                        <td><span class="badge bg-info text-dark">文件</span></td>
+                        <td>
+                            {% if f.size < 1024 %}
+                                {{ f.size }} B
+                            {% elif f.size < 1048576 %}
+                                {{ f.size|floatformat:0 }} B &nbsp;<small class="text-muted">({{ f.size|filesizeformat }})</small>
+                            {% else %}
+                                {{ f.size|filesizeformat }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'file-download' %}?path={{ f.path }}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-download"></i> 下载
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> 当前目录为空
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
