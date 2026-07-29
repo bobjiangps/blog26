@@ -37,12 +37,12 @@
             <i class="bi bi-cloud-upload"></i> 上传文件到当前目录
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'file-upload' %}" enctype="multipart/form-data">
+            <form id="uploadForm" method="post" action="{% url 'file-upload' %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="path" value="{{ current_path }}">
                 <div class="d-flex gap-2 align-items-center flex-wrap">
                     <input type="file" name="files" multiple class="form-control" style="max-width: 400px;">
-                    <button type="submit" class="btn btn-primary">
+                    <button id="uploadBtn" type="submit" class="btn btn-primary">
                         <i class="bi bi-upload"></i> 上传
                     </button>
                 </div>
@@ -63,6 +63,7 @@
                         <th>名称</th>
                         <th>类型</th>
                         <th>大小</th>
+                        <th>修改时间</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -75,6 +76,7 @@
                         </td>
                         <td><span class="badge bg-secondary">目录</span></td>
                         <td>—</td>
+                        <td><small class="text-muted">{{ d.mtime }}</small></td>
                         <td>
                             <a href="{% url 'file-manager' %}?path={{ d.path }}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-folder2-open"></i> 打开
@@ -98,8 +100,10 @@
                                 {{ f.size|filesizeformat }}
                             {% endif %}
                         </td>
+                        <td><small class="text-muted">{{ f.mtime }}</small></td>
                         <td>
-                            <a href="{% url 'file-download' %}?path={{ f.path }}" class="btn btn-sm btn-outline-success">
+                            <a href="{% url 'file-download' %}?path={{ f.path }}"
+                               class="btn btn-sm btn-outline-success download-btn">
                                 <i class="bi bi-download"></i> 下载
                             </a>
                         </td>
@@ -115,4 +119,25 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+// 上传按钮：提交后禁用，防止重复提交
+document.getElementById('uploadForm').addEventListener('submit', function () {
+    const btn = document.getElementById('uploadBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 上传中...';
+});
+
+// 下载按钮：点击后短暂禁用 3 秒，防止连点触发多次下载
+document.querySelectorAll('.download-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        btn.classList.add('disabled');
+        btn.setAttribute('aria-disabled', 'true');
+        setTimeout(function () {
+            btn.classList.remove('disabled');
+            btn.removeAttribute('aria-disabled');
+        }, 3000);
+    });
+});
+</script>
 {% endblock %}

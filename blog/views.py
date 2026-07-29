@@ -352,10 +352,20 @@ def file_manager(request):
         except ValueError:
             continue
         if item.is_dir():
-            dirs.append({"name": item.name, "path": rel})
+            stat = item.stat()
+            dirs.append({
+                "name": item.name,
+                "path": rel,
+                "mtime": datetime.datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+            })
         elif item.is_file():
-            size = item.stat().st_size
-            files.append({"name": item.name, "path": rel, "size": size})
+            stat = item.stat()
+            files.append({
+                "name": item.name,
+                "path": rel,
+                "size": stat.st_size,
+                "mtime": datetime.datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+            })
 
     current_path = current_dir.relative_to(base_dir).as_posix() if current_dir != base_dir else ""
 
@@ -418,14 +428,26 @@ def file_upload(request):
         messages.warning(request, "请选择要上传的文件")
         return redirect(f"{reverse('file-manager')}?path={urllib.parse.quote(rel_path)}")
 
+    saved_names = []
     for f in uploaded_files:
         safe_name = Path(f.name).name
+        stem = Path(safe_name).stem
+        suffix = Path(safe_name).suffix
         dest = target_dir / safe_name
+        counter = 1
+        while dest.exists():
+            dest = target_dir / f"{stem}_{counter}{suffix}"
+            counter += 1
         with open(dest, "wb") as out:
             for chunk in f.chunks():
                 out.write(chunk)
+        saved_names.append(dest.name)
 
-    messages.success(request, f"成功上传 {len(uploaded_files)} 个文件")
+    if saved_names != [Path(f.name).name for f in uploaded_files]:
+        renamed = [n for n in saved_names if "_" in Path(n).stem]
+        messages.success(request, f"成功上传 {len(saved_names)} 个文件（部分重名已自动重命名：{', '.join(renamed)}）")
+    else:
+        messages.success(request, f"成功上传 {len(saved_names)} 个文件")
     return redirect(f"{reverse('file-manager')}?path={urllib.parse.quote(rel_path)}")
 
 
