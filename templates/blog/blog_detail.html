@@ -234,7 +234,7 @@
                             <div class="blog-card">
                                 <div class="blog-image">
                                     <div class="image-placeholder bg-success">
-                                        <i class="bi bi-arrow-left"></i>
+                                        <a href="{% url 'blog-detail' post_next.id %}" style="color: white;"><i class="bi bi-arrow-left"></i></a>
                                     </div>
                                 </div>
                                 <div class="blog-body">
@@ -291,7 +291,7 @@
                             <div class="blog-card">
                                 <div class="blog-image">
                                     <div class="image-placeholder bg-primary">
-                                        <i class="bi bi-arrow-right"></i>
+                                        <a href="{% url 'blog-detail' post_prev.id %}" style="color: white;"><i class="bi bi-arrow-right"></i></a>
                                     </div>
                                 </div>
                                 <div class="blog-body">
