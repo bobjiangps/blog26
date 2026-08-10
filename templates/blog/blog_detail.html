@@ -91,7 +91,7 @@
 <!--                        </div>-->
 
                         <!-- Comments Section -->
-                        <div class="comments-section mt-5">
+                        <div class="comments-section mt-5" id="comments-section">
                             <h3 class="mb-4">
                                 <i class="bi bi-chat-dots"></i> 文章评论 (<span id="commentCount">{{comment_amount}}</span>)
                             </h3>
@@ -379,4 +379,64 @@
             </div>
         </div>
     </section>
+
+    <!-- 快速跳转浮动按钮 -->
+    <button id="scrollToggleBtn" title="跳转到评论区" onclick="scrollToggle()">
+        <i id="scrollToggleIcon" class="bi bi-chat-dots"></i>
+    </button>
+
+    <style>
+        #scrollToggleBtn {
+            position: fixed;
+            top: 30%;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-color, #0d6efd);
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s, transform .2s;
+            z-index: 999;
+        }
+        #scrollToggleBtn:hover { transform: scale(1.1); }
+    </style>
+
+    <script>
+        var _atTop = true;
+        var _commentsEl = document.getElementById('comments-section');
+        var _btn = document.getElementById('scrollToggleBtn');
+        var _icon = document.getElementById('scrollToggleIcon');
+
+        function updateBtn() {
+            // 距顶部超过评论区一半时认为不在顶部
+            var threshold = _commentsEl.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2;
+            _atTop = window.scrollY < threshold;
+            if (_atTop) {
+                _icon.className = 'bi bi-chat-dots';
+                _btn.title = '跳转到评论区';
+            } else {
+                _icon.className = 'bi bi-arrow-up';
+                _btn.title = '回到顶部';
+            }
+        }
+
+        function scrollToggle() {
+            if (_atTop) {
+                _commentsEl.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        window.addEventListener('scroll', updateBtn, { passive: true });
+        updateBtn();
+    </script>
+
 {% endblock %}
