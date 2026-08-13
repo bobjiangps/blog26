@@ -33,8 +33,9 @@ def group_detail(request, group_id):
     })
 
 
+@csrf_exempt
 def add_option(request, group_id):
-    """添加选项：游客也可以添加"""
+    """添加选项：游客也可以添加，无需 CSRF（公开无敏感操作）"""
     group = get_object_or_404(Group, pk=group_id)
     try:
         data = json.loads(request.body)

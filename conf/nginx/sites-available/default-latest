@@ -14,20 +14,35 @@
 # Default server configuration
 #
 
+# 注释掉以使用下面这个wheel相关的能用ip访问，若有需要取消注释即可
+#server {
+#    listen 80 default_server;
+#    listen [::]:80 default_server;
+#    server_name www.byincd.com byincd.com;
+#    rewrite ^(.*) https://$server_name$1 permanent;
+#}
+
+# 允许用 IP 直接访问轮盘 app（不跳转到域名）
+# 标记为 default_server，使 IP 访问时优先匹配此块
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name www.byincd.com byincd.com;
-    rewrite ^(.*) https://$server_name$1 permanent;
-}
-
-# 允许用 IP 直接访问轮盘 app（不跳转到域名）
-server {
-    listen 80;
-    listen [::]:80;
     server_name _;
 
     location /wheel {
+        include uwsgi_params;
+        uwsgi_pass 127.0.0.1:8001;
+        uwsgi_param UWSGI_CHDIR /home/bob/djproject/blog26;
+    }
+
+    # 登录/登出需要可以通过 IP 访问，否则 session cookie 会绑定到域名
+    location /bobjiang/login {
+        include uwsgi_params;
+        uwsgi_pass 127.0.0.1:8001;
+        uwsgi_param UWSGI_CHDIR /home/bob/djproject/blog26;
+    }
+
+    location /bobjiang/logout {
         include uwsgi_params;
         uwsgi_pass 127.0.0.1:8001;
         uwsgi_param UWSGI_CHDIR /home/bob/djproject/blog26;
@@ -74,7 +89,7 @@ server {
 
         server_name byincd.com;
 
-        client_max_body_size 20m;
+        client_max_body_size 100m;
 
         ssl_certificate /home/bob/cer/www.byincd.com.pem;
         ssl_certificate_key /home/bob/cer/www.byincd.com.key;

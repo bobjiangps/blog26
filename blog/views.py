@@ -230,7 +230,6 @@ def update_reply_rate(request, reply_id):
     return HttpResponse("reply rate increased")
 
 
-@csrf_exempt
 @login_required
 def vditor_upload(request):
     if request.method == "POST" and request.FILES.getlist("file[]"):
@@ -252,12 +251,12 @@ def vditor_upload(request):
         for file in files:
             try:
                 # 3. 拼接完整的文件存储路径
-                full_save_path = os.path.join(relative_path, file.name)
-                # 保存文件
+                safe_name = os.path.basename(file.name)  # 防止路径穿越
+                full_save_path = os.path.join(relative_path, safe_name)
                 filename = default_storage.save(full_save_path, file)
                 # 获取可访问的 URL
                 file_url = default_storage.url(filename)
-                succ_map[file.name] = file_url
+                succ_map[safe_name] = file_url
             except Exception as e:
                 err_files.append(file.name)
 
