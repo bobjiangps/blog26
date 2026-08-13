@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'main',
     'blog',
     'accounting',
+    'wheel',
     # 'ckeditor',
     # 'ckeditor_uploader',
     # 'haystack',

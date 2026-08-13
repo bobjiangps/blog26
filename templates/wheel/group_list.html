@@ -1,0 +1,52 @@
+{% extends 'wheel/base.html' %}
+
+{% block title %}决策轮盘 - 群组列表{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 700px;">
+    <h2 class="mb-4 text-center"><i class="bi bi-collection"></i> 我的轮盘群组</h2>
+
+    <!-- 创建群组 -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form method="post" class="d-flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="name" class="form-control" placeholder="输入群组名称，如：今天吃什么" maxlength="100" required>
+                <button type="submit" class="btn btn-primary text-nowrap">
+                    <i class="bi bi-plus-lg"></i> 创建
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 群组列表 -->
+    {% if groups %}
+    <div class="row g-3">
+        {% for g in groups %}
+        <div class="col-12 col-sm-6">
+            <a href="{% url 'wheel-group-detail' g.id %}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0" style="transition: transform .15s;"
+                     onmouseover="this.style.transform='translateY(-3px)'"
+                     onmouseout="this.style.transform=''">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div style="font-size:2rem; color:#0d6efd;"><i class="bi bi-arrow-repeat"></i></div>
+                        <div>
+                            <div class="fw-semibold text-dark">{{ g.name }}</div>
+                            <div class="text-muted small">
+                                {{ g.options.count }} 个选项 &middot; {{ g.created_at|date:"Y-m-d" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center text-muted py-5">
+        <i class="bi bi-inbox" style="font-size:3rem;"></i>
+        <p class="mt-2">还没有群组，快来创建第一个吧！</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

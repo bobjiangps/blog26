@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}决策轮盘{% endblock %}</title>
+    <link href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!--    <script data-ad-client="ca-pub-9496515710476197" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2edea8f92ce9ba61a91e036cffc15dcb";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+    <style>
+        body { background: #f8f9fa; min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+        .navbar-brand { font-weight: 700; color: #0d6efd !important; }
+        .ad-block { background: #e9ecef; border: 1px dashed #adb5bd; border-radius: 8px;
+                    display: flex; align-items: center; justify-content: center;
+                    color: #6c757d; font-size: .85rem; }
+        footer { background: #fff; border-top: 1px solid #dee2e6; padding: 1rem 0; text-align: center;
+                 color: #6c757d; font-size: .85rem; margin-top: auto; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'wheel-group-list' %}">
+            <i class="bi bi-arrow-repeat"></i> 决策轮盘
+        </a>
+        <div class="ms-auto">
+            {% if user.is_authenticated %}
+            <span class="me-3 text-muted small"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+            <a href="{% url 'do-logout' %}" class="btn btn-sm btn-outline-secondary">退出</a>
+            <a href="{% url 'do-login' %}" class="btn btn-sm btn-outline-primary">登录</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div style="flex: 1;">
+{% block content %}{% endblock %}
+</div>
+
+<footer>
+    <div class="container">决策轮盘 &mdash; 让选择更简单</div>
+</footer>
+</body>
+</html>

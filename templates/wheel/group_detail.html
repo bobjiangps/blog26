@@ -1,0 +1,422 @@
+{% extends 'wheel/base.html' %}
+
+{% block title %}{{ group.name }} - 决策轮盘{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── 布局 ─────────────────────────────── */
+.wheel-page-layout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 1.5rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.ad-side {
+    width: 160px;
+    min-width: 160px;
+    flex-shrink: 0;
+}
+.wheel-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+@media (max-width: 991px) {
+    .ad-side { display: none; }
+    .wheel-page-layout { padding: .75rem .5rem; }
+}
+
+/* ── 轮盘 ─────────────────────────────── */
+#wheelWrap {
+    position: relative;
+    width: min(90vw, 420px);
+    height: min(90vw, 420px);
+}
+#wheelCanvas { width: 100%; height: 100%; border-radius: 50%; display: block; }
+#spinBtn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    background: #0d6efd;
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.3);
+    transition: background .2s;
+    z-index: 10;
+}
+#spinBtn:hover:not(:disabled) { background: #0b5ed7; }
+#spinBtn:disabled { background: #6c757d; cursor: not-allowed; }
+
+/* 指针三角 */
+#wheelWrap::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -18px;
+    transform: translateY(-50%);
+    border-left: 22px solid #dc3545;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+    z-index: 20;
+}
+
+/* ── 结果高亮 ─────────────────────────── */
+#resultBanner {
+    display: none;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    border-radius: 12px;
+    padding: .6rem 1.6rem;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(13,110,253,.35);
+    animation: popIn .4s ease;
+}
+@keyframes popIn {
+    from { transform: scale(.7); opacity: 0; }
+    to   { transform: scale(1);  opacity: 1; }
+}
+
+/* ── 选项列表 ─────────────────────────── */
+.option-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    font-size: .9rem;
+    color: #fff;
+    margin: .25rem;
+    font-weight: 500;
+}
+.option-tag .del-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,.8);
+    padding: 0;
+    line-height: 1;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.option-tag .del-btn:hover { color: #fff; }
+
+/* ── 手机广告位 ─────────────────────────── */
+.ad-mobile { display: none; }
+@media (max-width: 991px) { .ad-mobile { display: block; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wheel-page-layout">
+
+<!--    &lt;!&ndash; 左侧广告（PC） &ndash;&gt;-->
+<!--    <div class="ad-side">-->
+<!--        <div class="ad-block" style="height:600px;">-->
+<!--            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+<!--            <ins class="adsbygoogle"-->
+<!--                 style="display:block; text-align:center;"-->
+<!--                 data-ad-layout="in-article"-->
+<!--                 data-ad-format="fluid"-->
+<!--                 data-ad-client="ca-pub-9496515710476197"-->
+<!--                 data-ad-slot="6263333864"></ins>-->
+<!--            <script>-->
+<!--                 (adsbygoogle = window.adsbygoogle || []).push({});-->
+<!--            </script>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <!-- 主内容 -->
+    <div class="wheel-main">
+        <h3 class="mb-3 text-center">{{ group.name }}</h3>
+
+        <!-- 轮盘区域 -->
+        <div id="wheelWrap">
+            <canvas id="wheelCanvas" width="420" height="420"></canvas>
+            <button id="spinBtn">转动</button>
+        </div>
+
+        <!-- 结果 -->
+        <div id="resultBanner"></div>
+
+<!--        &lt;!&ndash; 手机广告位（轮盘和选项之间） &ndash;&gt;-->
+<!--        <div class="ad-mobile w-100 my-3">-->
+<!--            <div class="ad-block" style="height:100px;">-->
+<!--                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+<!--                <ins class="adsbygoogle"-->
+<!--                     style="display:block; text-align:center;"-->
+<!--                     data-ad-layout="in-article"-->
+<!--                     data-ad-format="fluid"-->
+<!--                     data-ad-client="ca-pub-9496515710476197"-->
+<!--                     data-ad-slot="6263333864"></ins>-->
+<!--                <script>-->
+<!--                     (adsbygoogle = window.adsbygoogle || []).push({});-->
+<!--                </script>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <!-- 添加选项（所有人可用） -->
+        <div class="card shadow-sm mt-4 w-100" style="max-width:480px;">
+            <div class="card-body">
+                <div class="input-group">
+                    <input type="text" id="optionInput" class="form-control" placeholder="输入选项，如：米粉" maxlength="40">
+                    <button id="addBtn" class="btn btn-primary" onclick="addOption()">
+                        <i class="bi bi-plus-lg"></i> 添加
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 选项标签列表 -->
+        <div id="optionTags" class="mt-3 text-center" style="max-width:480px;"></div>
+
+<!--        &lt;!&ndash; 手机广告位（页面底部） &ndash;&gt;-->
+<!--        <div class="ad-mobile w-100 mt-4">-->
+<!--            <div class="ad-block" style="height:100px;">-->
+<!--                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+<!--                <ins class="adsbygoogle"-->
+<!--                     style="display:block; text-align:center;"-->
+<!--                     data-ad-layout="in-article"-->
+<!--                     data-ad-format="fluid"-->
+<!--                     data-ad-client="ca-pub-9496515710476197"-->
+<!--                     data-ad-slot="6263333864"></ins>-->
+<!--                <script>-->
+<!--                     (adsbygoogle = window.adsbygoogle || []).push({});-->
+<!--                </script>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+
+<!--    &lt;!&ndash; 右侧广告（PC） &ndash;&gt;-->
+<!--    <div class="ad-side">-->
+<!--        <div class="ad-block" style="height:600px;">-->
+<!--            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+<!--            <ins class="adsbygoogle"-->
+<!--                 style="display:block; text-align:center;"-->
+<!--                 data-ad-layout="in-article"-->
+<!--                 data-ad-format="fluid"-->
+<!--                 data-ad-client="ca-pub-9496515710476197"-->
+<!--                 data-ad-slot="6263333864"></ins>-->
+<!--            <script>-->
+<!--                 (adsbygoogle = window.adsbygoogle || []).push({});-->
+<!--            </script>-->
+<!--        </div>-->
+<!--    </div>-->
+
+</div><!-- end layout -->
+
+<script>
+// ── 数据 ──────────────────────────────────────────────────────────
+var GROUP_ID = {{ group.id }};
+var IS_AUTH  = {{ user.is_authenticated|yesno:"true,false" }};
+var options  = {{ options_json|safe }};
+
+var COLORS = [
+    "#4e79a7","#f28e2b","#e15759","#76b7b2","#59a14f",
+    "#edc948","#b07aa1","#ff9da7","#9c755f","#bab0ac",
+    "#d37295","#fabfd2","#8cd17d","#b6992d","#499894",
+    "#86bcb6","#e15759","#ff9d9a","#79706e","#bab0ac"
+];
+
+// ── Canvas 轮盘 ───────────────────────────────────────────────────
+var canvas = document.getElementById('wheelCanvas');
+var ctx    = canvas.getContext('2d');
+var currentAngle = 0;  // 当前总旋转角度（弧度）
+
+function drawWheel(highlightIdx) {
+    var W = canvas.width, H = canvas.height;
+    var cx = W / 2, cy = H / 2, r = W / 2 - 4;
+    ctx.clearRect(0, 0, W, H);
+
+    if (options.length === 0) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+        ctx.fillStyle = '#dee2e6';
+        ctx.fill();
+        ctx.fillStyle = '#6c757d';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('暂无选项', cx, cy);
+        return;
+    }
+
+    var n   = options.length;
+    var arc = 2 * Math.PI / n;
+
+    options.forEach(function(opt, i) {
+        var start = currentAngle + i * arc;
+        var end   = start + arc;
+
+        // 扇形
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, start, end);
+        ctx.closePath();
+        ctx.fillStyle = (highlightIdx === i) ? '#ffd700' : COLORS[i % COLORS.length];
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 文字
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(start + arc / 2);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#fff';
+        var fontSize = Math.max(10, Math.min(16, Math.floor(r * 0.22)));
+        ctx.font = 'bold ' + fontSize + 'px sans-serif';
+        // 截断过长文字
+        var label = opt.text.length > 8 ? opt.text.slice(0, 7) + '…' : opt.text;
+        ctx.fillText(label, r - 12, 0);
+        ctx.restore();
+    });
+
+    // 中心圆
+    ctx.beginPath();
+    ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+}
+
+// ── 旋转动画 ─────────────────────────────────────────────────────
+var spinning = false;
+
+document.getElementById('spinBtn').addEventListener('click', function () {
+    if (spinning || options.length < 2) return;
+    spinning = true;
+    document.getElementById('spinBtn').disabled = true;
+    document.getElementById('resultBanner').style.display = 'none';
+
+    // 随机决定停止的扇区
+    var targetIdx = Math.floor(Math.random() * options.length);
+    var arc = 2 * Math.PI / options.length;
+
+    // 指针在右侧（角度 0），扇区 i 的中心在 currentAngle + i*arc + arc/2
+    // 让指针对齐目标扇区中心，需要额外旋转：
+    var targetCenter = targetIdx * arc + arc / 2;
+    // 旋转到指针（0 角度）需要转动：-currentAngle - targetCenter + 额外整圈
+    var extra = (3 + Math.floor(Math.random() * 4)) * 2 * Math.PI; // 3~6 圈
+    var totalDelta = extra + (2 * Math.PI - ((currentAngle + targetCenter) % (2 * Math.PI)));
+
+    var duration  = 4000; // ms
+    var startTime = null;
+    var startAngle = currentAngle;
+
+    function easeOut(t) {
+        // cubic ease-out
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    function frame(ts) {
+        if (!startTime) startTime = ts;
+        var elapsed = ts - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        currentAngle = startAngle + totalDelta * easeOut(progress);
+
+        if (progress < 1) {
+            drawWheel(-1);
+            requestAnimationFrame(frame);
+        } else {
+            currentAngle = startAngle + totalDelta;
+            // 标准化角度
+            currentAngle = currentAngle % (2 * Math.PI);
+            drawWheel(targetIdx);
+            spinning = false;
+            document.getElementById('spinBtn').disabled = false;
+            // 显示结果
+            var banner = document.getElementById('resultBanner');
+            banner.textContent = '🎉 结果：' + options[targetIdx].text;
+            banner.style.display = 'block';
+        }
+    }
+    requestAnimationFrame(frame);
+});
+
+// ── 选项标签渲染 ─────────────────────────────────────────────────
+function renderTags() {
+    var wrap = document.getElementById('optionTags');
+    wrap.innerHTML = '';
+    options.forEach(function(opt, i) {
+        var tag = document.createElement('span');
+        tag.className = 'option-tag';
+        tag.style.background = COLORS[i % COLORS.length];
+        tag.textContent = opt.text;
+        if (IS_AUTH) {
+            var btn = document.createElement('button');
+            btn.className = 'del-btn';
+            btn.innerHTML = '<i class="bi bi-x"></i>';
+            btn.onclick = function() { deleteOption(opt.id); };
+            tag.appendChild(btn);
+        }
+        wrap.appendChild(tag);
+    });
+}
+
+// ── 添加选项 ─────────────────────────────────────────────────────
+function addOption() {
+    var input = document.getElementById('optionInput');
+    var text  = input.value.trim();
+    if (!text) return;
+    fetch('/wheel/' + GROUP_ID + '/add-option/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({text: text})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { alert(data.error); return; }
+        options = data.options;
+        input.value = '';
+        renderTags();
+        drawWheel(-1);
+    });
+}
+
+document.getElementById('optionInput') && document.getElementById('optionInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') addOption();
+});
+
+// ── 删除选项 ─────────────────────────────────────────────────────
+function deleteOption(optId) {
+    fetch('/wheel/' + GROUP_ID + '/delete-option/' + optId + '/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data.success) return;
+        options = data.options;
+        document.getElementById('resultBanner').style.display = 'none';
+        renderTags();
+        drawWheel(-1);
+    });
+}
+
+// ── CSRF helper ──────────────────────────────────────────────────
+function getCookie(name) {
+    var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+}
+
+// ── 初始化 ───────────────────────────────────────────────────────
+renderTags();
+drawWheel(-1);
+</script>
+{% endblock %}

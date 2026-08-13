@@ -28,6 +28,7 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # path('bobjiang/search/', include('haystack.urls')),
     path('accounting/', include('accounting.urls')),
+    path('wheel/', include('wheel.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
