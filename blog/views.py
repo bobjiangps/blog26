@@ -230,6 +230,7 @@ def update_reply_rate(request, reply_id):
     return HttpResponse("reply rate increased")
 
 
+@csrf_exempt
 @login_required
 def vditor_upload(request):
     if request.method == "POST" and request.FILES.getlist("file[]"):
