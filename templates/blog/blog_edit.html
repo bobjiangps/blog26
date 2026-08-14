@@ -206,6 +206,11 @@
                 url: urlPrefix + '/bobjiang/api/vditor/upload/', // backend upload endpoint
                 max: 100 * 1024 * 1024, // 100M upload
                 linkToImgUrl: 'api/vditor/upload/',
+                setHeaders() {
+                    // 每次上传前重新读取 CSRF token（防止 token 轮换导致失效）
+                    const match = document.cookie.match(/csrftoken=([^;]+)/);
+                    return { 'X-CSRFToken': match ? match[1] : '' };
+                },
                 filename: name => name.replace(/[^(a-zA-Z0-9\.)]/g, ''),
                 format(files, responseText) {
                     //const response = JSON.parse(responseText);
