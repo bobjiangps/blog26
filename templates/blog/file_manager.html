@@ -3,6 +3,9 @@
 {% block title %}文件管理 - Bob Blog{% endblock %}
 
 {% block content %}
+{{ dirs|json_script:"fm-dirs-data" }}
+{{ files|json_script:"fm-files-data" }}
+
 <div class="container my-4">
     <h2 class="mb-3"><i class="bi bi-folder2-open"></i> 文件管理</h2>
 
@@ -32,7 +35,7 @@
     </nav>
 
     <!-- 上传区域 -->
-    <div class="card mb-4">
+    <div class="card mb-3">
         <div class="card-header">
             <i class="bi bi-cloud-upload"></i> 上传文件到当前目录
         </div>
@@ -50,94 +53,256 @@
         </div>
     </div>
 
-    <!-- 目录列表 -->
-    {% if dirs or files %}
-    <div class="card">
-        <div class="card-header">
-            <i class="bi bi-list-ul"></i> 目录内容
+    <!-- 过滤与排序工具栏 -->
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <div class="row g-2 align-items-center">
+                <!-- 类型过滤 -->
+                <div class="col-auto">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary active" data-type="all"   onclick="setTypeFilter('all')">全部</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"        data-type="dir"   onclick="setTypeFilter('dir')"><i class="bi bi-folder"></i> 目录</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"        data-type="file"  onclick="setTypeFilter('file')"><i class="bi bi-file-earmark"></i> 文件</button>
+                    </div>
+                </div>
+                <!-- 搜索框 -->
+                <div class="col-12 col-md-4">
+                    <div class="input-group input-group-md">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="fm-search" class="form-control" placeholder="按文件名搜索…">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('fm-search').value='';renderTable()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- 排序字段 -->
+                <div class="col-auto">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-primary active" data-sort="name"  onclick="setSort('name')">名称</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary"        data-sort="size"  onclick="setSort('size')">大小</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary"        data-sort="mtime" onclick="setSort('mtime')">时间</button>
+                    </div>
+                    <button id="fm-dir-btn" class="btn btn-sm btn-outline-secondary ms-1" title="升序/降序" onclick="toggleDir()">
+                        <i class="bi bi-sort-down" id="fm-dir-icon"></i>
+                    </button>
+                </div>
+                <!-- 统计信息 -->
+                <div class="col-auto ms-auto">
+                    <small class="text-muted" id="fm-count"></small>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <!-- 目录列表 -->
+    <div class="card" id="fm-card">
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0" id="fm-table">
                 <thead class="table-light">
                     <tr>
-                        <th>名称</th>
+                        <th style="cursor:pointer;" onclick="setSort('name')">
+                            名称 <i class="bi bi-chevron-expand text-muted" id="th-name"></i>
+                        </th>
                         <th>类型</th>
-                        <th>大小</th>
-                        <th>修改时间</th>
+                        <th style="cursor:pointer;" onclick="setSort('size')">
+                            大小 <i class="bi bi-chevron-expand text-muted" id="th-size"></i>
+                        </th>
+                        <th style="cursor:pointer;" onclick="setSort('mtime')">
+                            修改时间 <i class="bi bi-chevron-expand text-muted" id="th-mtime"></i>
+                        </th>
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for d in dirs %}
-                    <tr>
-                        <td>
-                            <i class="bi bi-folder-fill text-warning"></i>
-                            <a href="{% url 'file-manager' %}?path={{ d.path }}">{{ d.name }}</a>
-                        </td>
-                        <td><span class="badge bg-secondary">目录</span></td>
-                        <td>—</td>
-                        <td><small class="text-muted">{{ d.mtime }}</small></td>
-                        <td>
-                            <a href="{% url 'file-manager' %}?path={{ d.path }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-folder2-open"></i> 打开
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% for f in files %}
-                    <tr>
-                        <td>
-                            <i class="bi bi-file-earmark text-muted"></i>
-                            {{ f.name }}
-                        </td>
-                        <td><span class="badge bg-info text-dark">文件</span></td>
-                        <td>
-                            {% if f.size < 1024 %}
-                                {{ f.size }} B
-                            {% elif f.size < 1048576 %}
-                                {{ f.size|floatformat:0 }} B &nbsp;<small class="text-muted">({{ f.size|filesizeformat }})</small>
-                            {% else %}
-                                {{ f.size|filesizeformat }}
-                            {% endif %}
-                        </td>
-                        <td><small class="text-muted">{{ f.mtime }}</small></td>
-                        <td>
-                            <a href="{% url 'file-download' %}?path={{ f.path }}"
-                               class="btn btn-sm btn-outline-success download-btn">
-                                <i class="bi bi-download"></i> 下载
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                <tbody id="fm-tbody"></tbody>
             </table>
         </div>
     </div>
-    {% else %}
-    <div class="alert alert-info">
-        <i class="bi bi-info-circle"></i> 当前目录为空
+    <div class="alert alert-info d-none" id="fm-empty">
+        <i class="bi bi-info-circle"></i> <span id="fm-empty-msg">当前目录为空</span>
     </div>
-    {% endif %}
 </div>
 
 <script>
-// 上传按钮：提交后禁用，防止重复提交
-document.getElementById('uploadForm').addEventListener('submit', function () {
-    const btn = document.getElementById('uploadBtn');
+var FM_BASE_URL   = "{% url 'file-manager' %}";
+var FM_DL_URL     = "{% url 'file-download' %}";
+var allDirs  = JSON.parse(document.getElementById('fm-dirs-data').textContent);
+var allFiles = JSON.parse(document.getElementById('fm-files-data').textContent);
+
+// ── 状态 ────────────────────────────────────────────────────────────
+var state = { sort: 'name', dir: 'asc', type: 'all', q: '' };
+
+// ── 工具函数 ─────────────────────────────────────────────────────────
+function fmtSize(bytes) {
+    if (bytes === null || bytes === undefined) return '—';
+    if (bytes < 1024)        return bytes + ' B';
+    if (bytes < 1048576)     return (bytes / 1024).toFixed(1) + ' KB';
+    if (bytes < 1073741824)  return (bytes / 1048576).toFixed(1) + ' MB';
+    return (bytes / 1073741824).toFixed(2) + ' GB';
+}
+
+function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── 排序比较 ──────────────────────────────────────────────────────────
+function cmp(a, b) {
+    var factor = state.dir === 'asc' ? 1 : -1;
+    var av, bv;
+    if (state.sort === 'name') {
+        av = a.name.toLowerCase(); bv = b.name.toLowerCase();
+        return factor * (av < bv ? -1 : av > bv ? 1 : 0);
+    } else if (state.sort === 'size') {
+        av = a.size !== undefined ? a.size : -1;
+        bv = b.size !== undefined ? b.size : -1;
+        return factor * (av - bv);
+    } else { // mtime
+        av = a.mtime || ''; bv = b.mtime || '';
+        return factor * (av < bv ? -1 : av > bv ? 1 : 0);
+    }
+}
+
+// ── 渲染 ─────────────────────────────────────────────────────────────
+function renderTable() {
+    var q = document.getElementById('fm-search').value.trim().toLowerCase();
+    state.q = q;
+
+    var dirs  = allDirs.filter(function(d)  { return !q || d.name.toLowerCase().indexOf(q) !== -1; });
+    var files = allFiles.filter(function(f) { return !q || f.name.toLowerCase().indexOf(q) !== -1; });
+
+    // 类型过滤
+    var showDirs  = state.type !== 'file';
+    var showFiles = state.type !== 'dir';
+
+    // 排序
+    dirs.sort(cmp);
+    files.sort(cmp);
+
+    // 合并（按排序字段混排 or 目录优先）
+    var rows;
+    if (state.type === 'all') {
+        rows = [].concat(showDirs ? dirs.map(function(d){ return Object.assign({_kind:'dir'}, d); }) : [],
+                         showFiles ? files.map(function(f){ return Object.assign({_kind:'file'}, f); }) : []);
+    } else {
+        rows = state.type === 'dir'
+            ? dirs.map(function(d){ return Object.assign({_kind:'dir'}, d); })
+            : files.map(function(f){ return Object.assign({_kind:'file'}, f); });
+    }
+
+    var tbody = document.getElementById('fm-tbody');
+    var card  = document.getElementById('fm-card');
+    var empty = document.getElementById('fm-empty');
+
+    if (rows.length === 0) {
+        card.classList.add('d-none');
+        empty.classList.remove('d-none');
+        document.getElementById('fm-empty-msg').textContent = q ? '没有匹配的文件或目录' : '当前目录为空';
+        document.getElementById('fm-count').textContent = '';
+        return;
+    }
+
+    card.classList.remove('d-none');
+    empty.classList.add('d-none');
+
+    var html = '';
+    rows.forEach(function(row) {
+        if (row._kind === 'dir') {
+            html += '<tr>'
+                + '<td><i class="bi bi-folder-fill text-warning me-1"></i>'
+                + '<a href="' + FM_BASE_URL + '?path=' + encodeURIComponent(row.path) + '">' + escHtml(row.name) + '</a></td>'
+                + '<td><span class="badge bg-secondary">目录</span></td>'
+                + '<td>—</td>'
+                + '<td><small class="text-muted">' + escHtml(row.mtime || '') + '</small></td>'
+                + '<td><a href="' + FM_BASE_URL + '?path=' + encodeURIComponent(row.path) + '" class="btn btn-sm btn-outline-primary">'
+                + '<i class="bi bi-folder2-open"></i> 打开</a></td>'
+                + '</tr>';
+        } else {
+            html += '<tr>'
+                + '<td><i class="bi bi-file-earmark text-muted me-1"></i>' + escHtml(row.name) + '</td>'
+                + '<td><span class="badge bg-info text-dark">文件</span></td>'
+                + '<td><small>' + fmtSize(row.size) + '</small></td>'
+                + '<td><small class="text-muted">' + escHtml(row.mtime || '') + '</small></td>'
+                + '<td><a href="' + FM_DL_URL + '?path=' + encodeURIComponent(row.path) + '" class="btn btn-sm btn-outline-success download-btn">'
+                + '<i class="bi bi-download"></i> 下载</a></td>'
+                + '</tr>';
+        }
+    });
+    tbody.innerHTML = html;
+
+    // 重新绑定下载防连点
+    document.querySelectorAll('.download-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            btn.classList.add('disabled');
+            setTimeout(function(){ btn.classList.remove('disabled'); }, 3000);
+        });
+    });
+
+    // 统计
+    var dCount = rows.filter(function(r){ return r._kind==='dir'; }).length;
+    var fCount = rows.filter(function(r){ return r._kind==='file'; }).length;
+    var parts = [];
+    if (dCount) parts.push(dCount + ' 个目录');
+    if (fCount) parts.push(fCount + ' 个文件');
+    document.getElementById('fm-count').textContent = parts.join('，');
+
+    updateSortIcons();
+}
+
+// ── 控件操作 ──────────────────────────────────────────────────────────
+function setSort(field) {
+    if (state.sort === field) {
+        state.dir = state.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+        state.sort = field;
+        state.dir  = 'asc';
+    }
+    renderTable();
+}
+
+function toggleDir() {
+    state.dir = state.dir === 'asc' ? 'desc' : 'asc';
+    renderTable();
+}
+
+function setTypeFilter(type) {
+    state.type = type;
+    document.querySelectorAll('[data-type]').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.type === type);
+    });
+    renderTable();
+}
+
+function updateSortIcons() {
+    var fields = ['name', 'size', 'mtime'];
+    fields.forEach(function(f) {
+        var el = document.getElementById('th-' + f);
+        if (!el) return;
+        if (state.sort === f) {
+            el.className = state.dir === 'asc' ? 'bi bi-sort-up text-primary' : 'bi bi-sort-down text-primary';
+        } else {
+            el.className = 'bi bi-chevron-expand text-muted';
+        }
+    });
+    // 排序按钮高亮
+    document.querySelectorAll('[data-sort]').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.sort === state.sort);
+    });
+    // 方向按钮图标
+    document.getElementById('fm-dir-icon').className =
+        'bi ' + (state.dir === 'asc' ? 'bi-sort-up' : 'bi-sort-down');
+}
+
+// ── 搜索实时响应 ──────────────────────────────────────────────────────
+document.getElementById('fm-search').addEventListener('input', renderTable);
+
+// ── 上传防重复 ────────────────────────────────────────────────────────
+document.getElementById('uploadForm').addEventListener('submit', function() {
+    var btn = document.getElementById('uploadBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 上传中...';
 });
 
-// 下载按钮：点击后短暂禁用 3 秒，防止连点触发多次下载
-document.querySelectorAll('.download-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-        btn.classList.add('disabled');
-        btn.setAttribute('aria-disabled', 'true');
-        setTimeout(function () {
-            btn.classList.remove('disabled');
-            btn.removeAttribute('aria-disabled');
-        }, 3000);
-    });
-});
+// ── 初始化 ────────────────────────────────────────────────────────────
+renderTable();
 </script>
 {% endblock %}
+
