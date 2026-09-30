@@ -419,7 +419,7 @@
             var selected_month = $('#months-filter').children('option:selected').text();
             var spinner_filter_by_date = document.querySelector("#spinner-filter-by-date");
             var re = /^[0-9]+.?[0-9]*/;
-        　　 if (re.test(selected_year) && re.test(selected_month)) {
+            if (re.test(selected_year) && re.test(selected_month)) {
                 $.ajax({
                     type: "POST",
                     data: {year: selected_year, month: selected_month},
@@ -478,10 +478,10 @@
                         record_list.innerHTML = cards;
                     }
                 });
-        　　 }
+            }
             else {
-        　　　　 alert("请选择年和月!");
-        　　 }
+                alert("请选择年和月!");
+            }
         });
 
         $('#ie-type-list').change(function(){
@@ -616,9 +616,46 @@
     })
 </script>
 <script>
+    // 4 个图表实例提升到外层作用域，便于 resize 时统一调用
+    var monthBarChart, monthPieChart, yearBarChart, yearPieChart;
+
+    // 同一个 dom 已有实例时复用，避免重复 init 导致实例泄漏与告警
+    function initChartOnce(domId) {
+        var el = document.getElementById(domId);
+        return echarts.getInstanceByDom(el) || echarts.init(el);
+    }
+
+    // 统一重绘：容器宽度变化后让 canvas 跟随变化
+    function resizeAllCharts() {
+        [monthBarChart, monthPieChart, yearBarChart, yearPieChart].forEach(function (c) {
+            if (c && !c.isDisposed()) {
+                c.resize();
+            }
+        });
+    }
+
+    (function () {
+        var resizeTimer = null;
+        function scheduleResize() {
+            clearTimeout(resizeTimer);
+            // 移动端旋转后布局需要一点时间稳定，延迟再取新宽度
+            resizeTimer = setTimeout(resizeAllCharts, 200);
+        }
+        window.addEventListener('resize', scheduleResize);
+        window.addEventListener('orientationchange', scheduleResize);
+        if (window.screen && window.screen.orientation) {
+            window.screen.orientation.addEventListener('change', scheduleResize);
+        }
+    })();
+
     $(function () {
         $('#home-nav').click(function(){
             $("#top-container").attr("class", "container");
+        });
+
+        // Tab 从隐藏变为显示时，容器宽度才真实可用，需要重绘一次
+        $('#charts-nav').on('shown.bs.tab', function () {
+            resizeAllCharts();
         });
 
         $('#charts-nav').click(function(){
@@ -643,7 +680,7 @@
                 }
             });
 
-            var monthBarChart = echarts.init(document.getElementById('month-bar-chart'));
+            monthBarChart = initChartOnce('month-bar-chart');
             var monthBarOption = {
                 title: {
                     text: '当月每日收支记录',
@@ -695,7 +732,7 @@
             };
             monthBarChart.setOption(monthBarOption);
 
-            var monthPieChart = echarts.init(document.getElementById('month-pie-chart'));
+            monthPieChart = initChartOnce('month-pie-chart');
             var monthPieOption = {
                 title: {
                     text: '当月收支类型比例',
@@ -763,7 +800,7 @@
             };
             monthPieChart.setOption(monthPieOption);
 
-            var yearBarChart = echarts.init(document.getElementById('year-bar-chart'));
+            yearBarChart = initChartOnce('year-bar-chart');
             var yearBarOption = {
                 title: {
                     text: '当年每月收支记录',
@@ -815,7 +852,7 @@
             };
             yearBarChart.setOption(yearBarOption);
 
-            var yearPieChart = echarts.init(document.getElementById('year-pie-chart'));
+            yearPieChart = initChartOnce('year-pie-chart');
             var yearPieOption = {
                 title: {
                     text: '当年收支类型比例',
@@ -883,6 +920,9 @@
             };
             yearPieChart.setOption(yearPieOption);
 
+            // 初次进入图表 Tab 后立即按当前视口尺寸重绘一次
+            setTimeout(resizeAllCharts, 0);
+
             $.ajax({
                 type: "GET",
                 url: "{% url 'retrieve_current_month_income_expense' %}",
@@ -921,7 +961,7 @@
                 }
             });
 
-            $('#available-years').change(function(){
+            $('#available-years').off('change.charts').on('change.charts', function(){
                 var current_selected_year = $(this).children('option:selected').text();
                 $.ajax({
                     type: "POST",
@@ -941,7 +981,7 @@
                 });
             });
 
-            $('#show-charts').click(function(){
+            $('#show-charts').off('click.charts').on('click.charts', function(){
                 var selected_year = $('#available-years').children('option:selected').text();
                 var selected_month = $('#available-months').children('option:selected').text();
                 var re = /^[0-9]+.?[0-9]*/;
