@@ -121,7 +121,7 @@ server {
         }
 
         location ~ .php$ {
-            fastcgi_pass   unix:/run/php/php7.4-fpm.sock;
+            fastcgi_pass   unix:/run/php/php8.4-fpm.sock;
             fastcgi_index  index.php;
             fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
             include        fastcgi_params;
@@ -136,13 +136,28 @@ server {
             }
         }
 
-        location ~ /phpmyadmin {
+        # location ~ /phpmyadmin {
+        location ~ /webdb {
             index index.php index.html index.htm;
             include /etc/nginx/mime.types;
             try_files $uri $uri/ /index.php?$is_args$args =404;
             if (!-e $request_filename) {
                 rewrite ^.*$ /index.php last;
             }
+        }
+
+        location /cockpit/ {
+            proxy_pass https://127.0.0.1:9090/cockpit/ ;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # websocket 支持，Cockpit 必需
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+
+            proxy_buffering off;
+            gzip off;
         }
 
         location ~ /bobjiang {
@@ -170,21 +185,21 @@ server {
             index index.html;
         }
 
-        location /jupyter/ {
-            proxy_pass http://127.0.0.1:8888;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-Scheme $scheme;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # location /jupyter/ {
+        #    proxy_pass http://127.0.0.1:8888;
+        #    proxy_set_header Host $host;
+        #    proxy_set_header X-Real-Scheme $scheme;
+        #    proxy_set_header X-Real-IP $remote_addr;
+        #    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
-            # websocket support
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
+        #    # websocket support
+        #    proxy_http_version 1.1;
+        #    proxy_set_header Upgrade $http_upgrade;
+        #    proxy_set_header Connection "upgrade";
 
-            proxy_read_timeout 120s;
-            proxy_next_upstream error;
-        }
+        #    proxy_read_timeout 120s;
+        #    proxy_next_upstream error;
+        # }
 
 
         # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
