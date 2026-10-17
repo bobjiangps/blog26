@@ -1,0 +1,14 @@
+[Unit]
+Description=uWSGI instance for Django project blog26
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/bob/djproject/blog26
+ExecStart=/home/bob/djproject/blog26/venv/bin/uwsgi -i /home/bob/djproject/blog26/conf/bob_uwsgi.ini
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
