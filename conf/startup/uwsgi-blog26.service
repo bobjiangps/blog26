@@ -4,11 +4,15 @@ After=network.target mysql.service
 Wants=mysql.service
 
 [Service]
-Type=simple
+Type=forking
+PIDFile=/home/bob/djproject/blog26/conf/uwsgi.pid
 WorkingDirectory=/home/bob/djproject/blog26
 ExecStart=/home/bob/djproject/blog26/venv/bin/uwsgi -i /home/bob/djproject/blog26/conf/bob_uwsgi.ini
-Restart=always
+ExecStop=/bin/kill -INT $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
 RestartSec=3
+TimeoutStopSec=10
 
 [Install]
 WantedBy=multi-user.target
