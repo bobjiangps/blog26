@@ -146,19 +146,19 @@ server {
             }
         }
 
-        location /cockpit/ {
-            proxy_pass https://127.0.0.1:9090/cockpit/ ;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        # location /cockpit/ {
+        #     proxy_pass https://127.0.0.1:9090/cockpit/ ;
+        #     proxy_set_header Host $host;
+        #     proxy_set_header X-Forwarded-Proto $scheme;
 
-            # websocket 支持，Cockpit 必需
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
+        #     # websocket 支持，Cockpit 必需
+        #     proxy_http_version 1.1;
+        #     proxy_set_header Upgrade $http_upgrade;
+        #     proxy_set_header Connection "upgrade";
 
-            proxy_buffering off;
-            gzip off;
-        }
+        #     proxy_buffering off;
+        #     gzip off;
+        # }
 
         location ~ /bobjiang {
                 include uwsgi_params;
