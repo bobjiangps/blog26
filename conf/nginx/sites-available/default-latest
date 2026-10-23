@@ -91,6 +91,8 @@ server {
 
         client_max_body_size 100m;
 
+        include snippets/bailing.conf;
+
         ssl_certificate /home/bob/cer/www.byincd.com.pem;
         ssl_certificate_key /home/bob/cer/www.byincd.com.key;
         ssl_session_timeout 5m;
